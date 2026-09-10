@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+/*
+  COSjobs design tokens.
+  Source: design/reference.html (see docs/design-rules.md for the full rule set).
+*/
+:root {
+  --ink: #16233a;
+  --ink-70: #4a5568;
+  --ink-45: #7c8798;
+  --paper: #eef0ec;
+  --card: #ffffff;
+  --stamp: #a8361f;
+  --flag: #8a6a1c;
+  --rule: #c9cfc8;
+  --rule-soft: #dfe3dd;
+  --radius: 3px;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-70: var(--ink-70);
+  --color-ink-45: var(--ink-45);
+  --color-paper: var(--paper);
+  --color-card: var(--card);
+  --color-stamp: var(--stamp);
+  --color-flag: var(--flag);
+  --color-rule: var(--rule);
+  --color-rule-soft: var(--rule-soft);
+
+  --font-sans: var(--font-archivo), "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-serif: var(--font-source-serif), "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-plex-mono), "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
+
+  --radius-sm: 3px;
+  --radius-md: 3px;
+  --radius-lg: 3px;
+  --radius-xl: 3px;
+  --radius-2xl: 3px;
+  --radius-3xl: 3px;
+  --radius-DEFAULT: 3px;
+
+  --tracking-heading: -0.03em;
+
+  --animate-reveal: reveal 420ms cubic-bezier(0.2, 0, 0, 1) both;
+  --animate-stamp: stamp 360ms cubic-bezier(0.2, 0, 0, 1) both;
+
+  @keyframes reveal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes stamp {
+    from { opacity: 0; transform: scale(1.12) rotate(-6deg); }
+    to { opacity: 1; transform: scale(1) rotate(-3deg); }
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    background: var(--paper);
+  }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: var(--tracking-heading);
+    text-wrap: balance;
+  }
+  * {
+    border-radius: 0;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+    border-radius: var(--radius);
+  }
+  ::selection {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  a {
+    text-underline-offset: 0.18em;
+    text-decoration-thickness: 1px;
+  }
+  details > summary {
+    list-style: none;
+  }
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
+}
+
+@layer components {
+  .prose-lede {
+    font-family: var(--font-serif);
+    font-size: 1.125rem;
+    line-height: 1.55;
+    color: var(--ink-70);
+    text-wrap: pretty;
+  }
+  .mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+  }
+  .hairline {
+    border-color: var(--rule);
+  }
+  .hairline-soft {
+    border-color: var(--rule-soft);
+  }
+  /* The single orchestrated load moment. Children get --i for stagger. */
+  .reveal-seq > * {
+    animation: var(--animate-reveal);
+    animation-delay: calc(var(--i, 0) * 70ms + 80ms);
+  }
+  .stamp-in {
+    animation: var(--animate-stamp);
+    animation-delay: calc(var(--i, 0) * 70ms + 220ms);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-seq > *, .stamp-in {
+      animation: none;
+    }
+  }
+}
