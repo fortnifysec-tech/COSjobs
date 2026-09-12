@@ -3,6 +3,9 @@ import { Archivo, IBM_Plex_Mono, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { hasDatabase } from "@/db/client";
+import { siteStats } from "@/lib/data/sponsors";
+import { isoDate, shortDateTime } from "@/lib/format";
 
 const archivo = Archivo({
   subsets: ["latin"],
@@ -27,14 +30,21 @@ const plexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "COSjobs — UK jobs checked against Skilled Worker visa rules",
+    default: "COSjobs: UK jobs checked against the Skilled Worker visa rules",
     template: "%s · COSjobs",
   },
   description:
     "Every role is checked against the Skilled Worker rules: occupation code, going rate, salary threshold and the employer's licence. We show the arithmetic.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  let registerLine: string | undefined;
+  if (hasDatabase) {
+    const s = await siteStats().catch(() => null);
+    if (s?.registerCheckedAt) {
+      registerLine = `Register checked ${shortDateTime(s.registerCheckedAt)}${s.rulesVersion ? ` · Rules ${isoDate(s.rulesVersion)}` : ""}`;
+    }
+  }
   return (
     <html
       lang="en-GB"
@@ -47,7 +57,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
-        <SiteHeader />
+        <SiteHeader registerLine={registerLine} />
         <main id="main" className="flex-1">
           {children}
         </main>

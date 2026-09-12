@@ -64,6 +64,8 @@
     background: var(--paper);
     color: var(--ink);
     font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.5;
     font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -116,6 +118,127 @@
   }
   .hairline-soft {
     border-color: var(--rule-soft);
+  }
+  /* Thick rule above a headed block. */
+  .rule-top {
+    border-top: 3px solid var(--ink);
+  }
+  /* Inset note. Left rule only, never a filled box. */
+  .inset {
+    border-left: 4px solid var(--ink);
+    padding-left: 1rem;
+  }
+  .inset-flag {
+    border-left: 4px solid var(--flag);
+    padding-left: 1rem;
+  }
+  .inset-stamp {
+    border-left: 4px solid var(--stamp);
+    padding-left: 1rem;
+  }
+  /* Form controls. Square, ink border, no inner shadow. */
+  .field {
+    height: 2.625rem;
+    width: 100%;
+    border: 2px solid var(--ink);
+    background: var(--card);
+    padding: 0 0.75rem;
+    font-size: 1rem;
+    color: var(--ink);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .field::placeholder {
+    color: var(--ink-45);
+  }
+  select.field {
+    padding-right: 2rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2316233a' stroke-width='2'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+  }
+  .field-label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .check {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid var(--ink);
+    background: var(--card);
+    accent-color: var(--ink);
+    -webkit-appearance: none;
+    appearance: none;
+    display: inline-grid;
+    place-content: center;
+    flex: none;
+  }
+  .check:checked::before {
+    content: "";
+    width: 0.625rem;
+    height: 0.625rem;
+    background: var(--ink);
+  }
+  .btn {
+    display: inline-flex;
+    height: 2.625rem;
+    align-items: center;
+    justify-content: center;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0 1.125rem;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .btn:hover {
+    background: color-mix(in srgb, var(--ink) 90%, black);
+  }
+  .btn-secondary {
+    display: inline-flex;
+    height: 2.625rem;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--ink);
+    color: var(--ink);
+    padding: 0 1.125rem;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    background: transparent;
+  }
+  .btn-secondary:hover {
+    background: var(--card);
+  }
+  .prose-body {
+    font-family: var(--font-serif);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--ink);
+    text-wrap: pretty;
+  }
+  .prose-body p + p {
+    margin-top: 1em;
+  }
+  .prose-body h2 {
+    font-family: var(--font-sans);
+    font-size: 1.25rem;
+    margin-top: 2em;
+    margin-bottom: 0.5em;
+  }
+  .prose-body ul {
+    list-style: disc;
+    padding-left: 1.25rem;
+    margin: 1em 0;
+  }
+  .prose-body li + li {
+    margin-top: 0.35em;
+  }
+  .prose-body a {
+    color: var(--ink);
   }
   /* The single orchestrated load moment. Children get --i for stagger. */
   .reveal-seq > * {

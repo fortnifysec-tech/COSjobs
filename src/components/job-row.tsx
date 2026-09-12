@@ -1,41 +1,39 @@
 import Link from "next/link";
-import { BandBadge, VerdictBadge, type Band, type Verdict } from "@/components/ui/badges";
+import { BandBadge, VerdictBadge } from "@/components/ui/badges";
+import type { JobListItem } from "@/lib/data/jobs";
+import { salaryLabel, timeAgo } from "@/lib/format";
 
-export type JobRowData = {
-  slug: string;
-  title: string;
-  employer: string;
-  location: string;
-  salary: string;
-  socCode: string;
-  postedAgo: string;
-  verdict: Verdict;
-  band: Band;
-};
-
-/** One ledger row. Hairline above and below, never a card. */
-export function JobRow({ job }: { job: JobRowData }) {
+/** One ledger row. Hairline below, never a card. */
+export function JobRow({ job, now, showEmployer = true }: { job: JobListItem; now?: Date; showEmployer?: boolean }) {
+  const salary = salaryLabel(job.salaryMin, job.salaryMax, job.salaryPeriod);
   return (
     <li className="border-b hairline-soft">
       <Link
         href={`/jobs/${job.slug}`}
-        className="grid grid-cols-1 gap-x-6 gap-y-1.5 px-1 py-3.5 no-underline hover:bg-card focus-visible:bg-card sm:grid-cols-[minmax(0,1fr)_10rem_auto]"
+        className="grid grid-cols-1 gap-x-6 gap-y-2 py-3.5 no-underline hover:bg-card focus-visible:bg-card sm:grid-cols-[minmax(0,1fr)_12.5rem_minmax(11rem,auto)] sm:px-2"
       >
         <div className="min-w-0">
-          <p className="truncate text-[0.9375rem] font-medium text-ink">{job.title}</p>
-          <p className="truncate text-[0.8125rem] text-ink-70">
-            {job.employer} <span className="text-ink-45">·</span> {job.location}
+          <p className="text-[1rem] font-medium leading-snug text-ink">{job.title}</p>
+          <p className="mt-0.5 text-[0.875rem] text-ink-70">
+            {showEmployer ? (
+              <>
+                {job.employer}
+                <span className="text-ink-45"> · </span>
+              </>
+            ) : null}
+            {job.location}
           </p>
         </div>
-        <div className="mono text-[0.8125rem] text-ink sm:text-right">
-          <p>{job.salary}</p>
-          <p className="text-[0.6875rem] text-ink-45">
-            SOC {job.socCode} · {job.postedAgo}
+        <div className="text-[0.875rem] text-ink sm:text-right">
+          <p className={job.salaryMin === null && job.salaryMax === null ? "text-ink-45" : "mono"}>{salary}</p>
+          <p className="mono mt-0.5 text-[0.75rem] text-ink-45">
+            {job.socCode ? `SOC ${job.socCode} · ` : ""}
+            {timeAgo(job.postedAt, now)}
           </p>
         </div>
         <div className="flex flex-wrap items-start gap-1.5 sm:justify-end">
           <VerdictBadge verdict={job.verdict} />
-          <BandBadge band={job.band} />
+          {job.band ? <BandBadge band={job.band} /> : null}
         </div>
       </Link>
     </li>

@@ -42,6 +42,16 @@ shows its working. The audience trusts GOV.UK visual language.
   `prefers-reduced-motion` disables it.
 - Anything that breaks at 390px.
 
+## Building blocks (`src/app/globals.css`)
+- `.rule-top` 3px ink rule above a headed block. `border-b-2 border-ink` under section headings.
+- `.inset`, `.inset-flag`, `.inset-stamp` left-rule callouts. Never a filled box.
+- `.field`, `.field-label`, `.check` form controls. 2px ink border, square.
+- `.btn`, `.btn-secondary` the only two button styles.
+- `.prose-body` long-form serif text (guides, advert text).
+- Evidence panel rows carry a state: pass, fail, unknown, skipped, info. Checks the
+  engine never reached are shown as "Not checked", not hidden.
+- Register names are upper case in the source. Pass them through `titleCase()`.
+
 ## Copy
 Sentence case, active voice, about B1 reading level. Buttons say what happens:
 "Check", "Start", "Add". Empty states give direction, not apology. Never
