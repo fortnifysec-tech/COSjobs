@@ -1,7 +1,7 @@
 import type { EvidenceRow } from "@/components/evidence-panel";
 import type { JobDetail } from "@/lib/data/jobs";
 import { BAND_LABEL } from "@/components/ui/badges";
-import { daysToYears, money, titleCase } from "@/lib/format";
+import { daysToYears, employerName, money, titleCase } from "@/lib/format";
 
 const SW = "Skilled Worker";
 
@@ -28,9 +28,9 @@ export function evidenceRows(detail: JobDetail): EvidenceRow[] {
 
   // 2. Licence
   if (stopped) {
-    rows.push({ label: "Sponsor licence", text: sponsor ? titleCase(sponsor.rawName) : job.employerRawName, note: notChecked, state: "skipped" });
+    rows.push({ label: "Sponsor licence", text: sponsor ? titleCase(sponsor.rawName) : employerName(job.employerRawName), note: notChecked, state: "skipped" });
   } else if (!sponsor) {
-    rows.push({ label: "Sponsor licence", text: job.employerRawName, note: "Not matched to any entry on the register of licensed sponsors.", state: "fail" });
+    rows.push({ label: "Sponsor licence", text: employerName(job.employerRawName), note: "Not matched to any entry on the register of licensed sponsors.", state: "fail" });
     stopped = true;
   } else if (!sponsor.isActive) {
     rows.push({ label: "Sponsor licence", text: titleCase(sponsor.rawName), note: "Removed from the register.", state: "fail" });

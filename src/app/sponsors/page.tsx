@@ -84,7 +84,7 @@ export default async function SponsorsPage({ searchParams }: PageProps<"/sponsor
           <li key={s.id} className="border-b hairline-soft">
             <Link
               href={`/sponsors/${s.id}`}
-              className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-6 gap-y-1.5 py-3.5 no-underline hover:bg-card md:grid-cols-[minmax(0,1fr)_7rem_5rem_9rem_11rem] md:items-baseline md:px-2"
+              className="grid grid-cols-1 gap-y-1.5 py-3.5 no-underline hover:bg-card md:grid-cols-[minmax(0,1fr)_7rem_5rem_9rem_11rem] md:items-baseline md:gap-x-6 md:px-2"
             >
               <span className="min-w-0">
                 <span className="block text-[1rem] font-medium leading-snug text-ink">{titleCase(s.name)}</span>
@@ -95,19 +95,23 @@ export default async function SponsorsPage({ searchParams }: PageProps<"/sponsor
                   {!s.isActive ? <span className="text-flag"> · removed from register</span> : null}
                 </span>
               </span>
-              <span className="text-[0.9375rem] text-ink">
+
+              {/* Phone: one line of figures. */}
+              <span className="text-[0.875rem] text-ink md:hidden">
+                Rated <span className="mono">{s.rating ?? "none"}</span>
+                {s.rating === "B" ? <span className="text-flag"> (restricted)</span> : null}
+                <span className="text-ink-45"> · </span>
+                <span className="mono">{num(s.meetingRoles)}</span> of <span className="mono">{num(s.liveRoles)}</span> live roles pass
+              </span>
+
+              {/* Wider: ledger columns under the header row. */}
+              <span className="hidden text-[0.9375rem] text-ink md:block">
                 <span className="mono">{s.rating ?? "–"}</span>
                 {s.rating === "B" ? <span className="text-flag"> restricted</span> : null}
               </span>
-              <span className="mono text-[0.9375rem] text-ink md:text-right">
-                <span className="text-[0.8125rem] text-ink-70 md:hidden">Live </span>
-                {num(s.liveRoles)}
-              </span>
-              <span className="mono text-[0.9375rem] text-ink md:text-right">
-                <span className="text-[0.8125rem] text-ink-70 md:hidden">Pass </span>
-                {num(s.meetingRoles)}
-              </span>
-              <span className="col-span-2 flex md:col-span-1 md:justify-end">{s.band ? <BandBadge band={s.band} /> : null}</span>
+              <span className="mono hidden text-[0.9375rem] text-ink md:block md:text-right">{num(s.liveRoles)}</span>
+              <span className="mono hidden text-[0.9375rem] text-ink md:block md:text-right">{num(s.meetingRoles)}</span>
+              <span className="flex md:justify-end">{s.band ? <BandBadge band={s.band} /> : null}</span>
             </Link>
           </li>
         ))}

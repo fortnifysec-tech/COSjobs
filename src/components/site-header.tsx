@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { NavLinks } from "@/components/nav-links";
 import { NAV, SITE_NAME } from "@/lib/site";
 
 export function SiteHeader({ registerLine }: { registerLine?: string }) {
@@ -23,15 +24,9 @@ export function SiteHeader({ registerLine }: { registerLine?: string }) {
               </span>
             </Link>
 
-            <nav aria-label="Primary" className="hidden md:block">
-              <ul className="flex items-center gap-7 text-[0.9375rem]">
-                {NAV.map((item) => (
-                  <li key={item.href}>
-                    <Link href={item.href} className="text-ink no-underline hover:underline">
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
+            <nav aria-label="Primary" className="hidden self-stretch md:block">
+              <ul className="flex h-full items-center gap-7 text-[0.9375rem]">
+                <NavLinks items={NAV} variant="bar" />
               </ul>
             </nav>
 
@@ -54,13 +49,7 @@ export function SiteHeader({ registerLine }: { registerLine?: string }) {
               </summary>
               <div className="absolute right-0 top-11 z-40 w-[calc(100vw-2rem)] max-w-xs border-2 border-ink bg-card">
                 <ul className="divide-y divide-rule-soft text-[0.9375rem]">
-                  {NAV.map((item) => (
-                    <li key={item.href}>
-                      <Link href={item.href} className="block px-4 py-3 text-ink no-underline hover:bg-paper">
-                        {item.label}
-                      </Link>
-                    </li>
-                  ))}
+                  <NavLinks items={NAV} variant="menu" />
                   <li>
                     <Link href="/sign-in" className="block px-4 py-3 text-ink no-underline hover:bg-paper">
                       Sign in

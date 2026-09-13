@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { FilterDisclosure } from "@/components/filter-disclosure";
 import { JobRow } from "@/components/job-row";
 import { Pagination } from "@/components/pagination";
 import { VERDICT_LABEL } from "@/components/ui/badges";
@@ -41,8 +42,9 @@ export default async function JobsPage({ searchParams }: PageProps<"/jobs">) {
         </p>
       </div>
 
-      <div className="mt-8 grid gap-10 md:grid-cols-[16rem_minmax(0,1fr)] md:gap-12">
+      <div className="mt-6 grid gap-6 md:mt-8 md:grid-cols-[16rem_minmax(0,1fr)] md:gap-12">
         <aside>
+          <FilterDisclosure>
           <form action="/jobs" method="get" className="space-y-5">
             <input type="hidden" name="all" value="1" />
 
@@ -139,6 +141,7 @@ export default async function JobsPage({ searchParams }: PageProps<"/jobs">) {
               ) : null}
             </div>
           </form>
+          </FilterDisclosure>
         </aside>
 
         <section aria-label="Results">

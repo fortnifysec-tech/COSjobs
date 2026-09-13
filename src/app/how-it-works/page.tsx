@@ -119,7 +119,7 @@ export default async function HowItWorksPage() {
           </div>
         </article>
 
-        <aside className="md:pt-2">
+        <aside className="self-start md:sticky md:top-6 md:pt-2">
           <div className="border-2 border-ink p-4">
             <p className="text-[0.875rem] font-bold">Figures in force</p>
             <dl className="mt-2 divide-y divide-rule-soft text-[0.9375rem]">

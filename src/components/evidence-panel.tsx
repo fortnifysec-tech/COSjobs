@@ -70,7 +70,9 @@ export function EvidencePanel({
           return (
             <div
               key={row.label}
-              className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-0.5 px-4 py-3 sm:grid-cols-[7.5rem_minmax(0,1fr)_4rem]"
+              className={`grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-0.5 py-3 pr-4 sm:grid-cols-[7.5rem_minmax(0,1fr)_4rem] ${
+                state === "fail" ? "border-l-4 border-l-flag pl-3" : "pl-4"
+              }`}
               style={{ ["--i" as string]: i + 1 }}
             >
               <dt className="text-[0.8125rem] text-ink-70 sm:pt-px">{row.label}</dt>

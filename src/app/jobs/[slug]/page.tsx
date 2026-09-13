@@ -5,14 +5,26 @@ import { EvidencePanel } from "@/components/evidence-panel";
 import { BAND_LABEL, BAND_SENTENCE, BandBadge, VERDICT_LABEL, VERDICT_SENTENCE, VerdictBadge } from "@/components/ui/badges";
 import { getJobBySlug, MEETS_RULES } from "@/lib/data/jobs";
 import { evidenceRows } from "@/lib/evidence";
-import { daysToYears, describeChange, isoDate, longDate, money, num, salaryLabel, shortDate, shortDateTime, titleCase } from "@/lib/format";
+import {
+  daysToYears,
+  describeChange,
+  employerName,
+  isoDate,
+  longDate,
+  money,
+  num,
+  salaryLabel,
+  shortDate,
+  shortDateTime,
+  titleCase,
+} from "@/lib/format";
 
 export async function generateMetadata({ params }: PageProps<"/jobs/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const d = await getJobBySlug(slug);
   if (!d) return { title: "Role not found" };
   return {
-    title: `${d.job.title} at ${d.job.employerRawName}, ${d.job.location}`,
+    title: `${d.job.title} at ${employerName(d.job.employerRawName)}, ${d.job.location}`,
     description: `${VERDICT_LABEL[d.assessment.verdict]}. ${VERDICT_SENTENCE[d.assessment.verdict]}`,
   };
 }
@@ -31,6 +43,9 @@ export default async function JobPage({ params }: PageProps<"/jobs/[slug]">) {
   const salary = salaryLabel(job.salaryMin, job.salaryMax, job.salaryPeriod);
   const paragraphs = job.description.split(/\n\s*\n/).filter(Boolean);
   const insetClass = passes ? "inset-stamp" : verdict === "SALARY_UNKNOWN" ? "inset" : "inset-flag";
+  const employer = employerName(job.employerRawName);
+  const matched = a.negativeSignalMatched ?? a.positiveSignalSnippet;
+  const matchedShown = Boolean(matched && paragraphs.some((p) => p.includes(matched)));
 
   return (
     <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6 md:py-10">
@@ -39,7 +54,7 @@ export default async function JobPage({ params }: PageProps<"/jobs/[slug]">) {
           Jobs
         </Link>
         <span className="mx-2 text-ink-45">/</span>
-        <span className="mono">{job.slug.slice(-6)}</span>
+        Record <span className="mono">{job.slug.slice(-6)}</span>
       </p>
 
       <div className="mt-4 grid gap-10 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:gap-12">
@@ -48,10 +63,10 @@ export default async function JobPage({ params }: PageProps<"/jobs/[slug]">) {
           <p className="mt-2 text-[1.125rem] text-ink">
             {sponsor ? (
               <Link href={`/sponsors/${sponsor.id}`} className="text-ink">
-                {job.employerRawName}
+                {employer}
               </Link>
             ) : (
-              job.employerRawName
+              employer
             )}
             <span className="text-ink-45"> · </span>
             {job.location}
@@ -100,7 +115,8 @@ export default async function JobPage({ params }: PageProps<"/jobs/[slug]">) {
               ))}
             </div>
             <p className="mt-4 text-[0.8125rem] text-ink-45">
-              Text as published by the employer. Underlined wording is what the sponsorship check matched.
+              Text as published by the employer.
+              {matchedShown ? " Underlined wording is what the sponsorship check matched." : " No sentence about sponsorship was found in it."}
             </p>
           </section>
 
@@ -185,7 +201,7 @@ export default async function JobPage({ params }: PageProps<"/jobs/[slug]">) {
 
           {passes ? (
             <p className="mt-8 text-[0.875rem] leading-relaxed text-ink-70">
-              Meets the rules published on GOV.UK for {longDate(rules)}. Whether {job.employerRawName} will sponsor
+              Meets the rules published on GOV.UK for {longDate(rules)}. Whether {employer} will sponsor
               you is their decision, made after an offer. Salary figure used:{" "}
               {a.salaryAssessedAnnual ? <span className="mono">{money(a.salaryAssessedAnnual)}</span> : "none"}.
             </p>

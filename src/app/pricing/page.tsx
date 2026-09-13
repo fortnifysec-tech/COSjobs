@@ -21,6 +21,11 @@ const INCLUDED: { feature: string; free: boolean | string; seeker: boolean | str
   { feature: "New sponsors 24 hours before Seeker", free: false, seeker: false, plus: true },
 ];
 
+/** "Full advert text" becomes "full advert text"; "CV tailored" is left alone. */
+function lowerFirst(s: string) {
+  return /^[A-Z][a-z]/.test(s) ? s[0].toLowerCase() + s.slice(1) : s;
+}
+
 function Cell({ v }: { v: boolean | string }) {
   if (v === true) return <span aria-label="Included">Yes</span>;
   if (v === false) return <span className="text-ink-45" aria-label="Not included">–</span>;
@@ -37,7 +42,49 @@ export default function PricingPage() {
         advert and being told first. Every plan is month to month and you cancel from your account page.
       </p>
 
-      <div className="mt-10 overflow-x-auto">
+      {/* Phones: one ledger per plan, so no plan is hidden off the edge of the screen. */}
+      <div className="mt-8 md:hidden">
+        {(
+          [
+            { plan: free, key: "free", cta: { href: "/jobs", label: "Search", primary: false } },
+            { plan: seeker, key: "seeker", cta: { href: "/sign-in?plan=seeker", label: "Start Seeker", primary: true } },
+            { plan: plus, key: "plus", cta: { href: "/sign-in?plan=plus", label: "Start Seeker Plus", primary: true } },
+          ] as const
+        ).map(({ plan, key, cta }) => {
+          const included = INCLUDED.filter((r) => r[key] !== false);
+          const notIncluded = INCLUDED.filter((r) => r[key] === false);
+          return (
+            <section key={plan.id} aria-labelledby={`plan-${plan.id}`} className="rule-top pt-3 [&+&]:mt-8">
+              <div className="flex items-baseline justify-between gap-4">
+                <h2 id={`plan-${plan.id}`} className="text-[1.25rem]">
+                  {plan.name}
+                </h2>
+                <p className="text-right">
+                  <span className="mono text-[1.25rem]">{plan.price}</span>
+                  <span className="block text-[0.8125rem] text-ink-70">{plan.per || "no account needed"}</span>
+                </p>
+              </div>
+              <p className="mt-1 text-[0.9375rem] text-ink-70">{plan.what}</p>
+              <dl className="mt-3 divide-y divide-rule-soft border-t hairline text-[0.9375rem]">
+                {included.map((r) => (
+                  <div key={r.feature} className="flex justify-between gap-4 py-2">
+                    <dt className="text-ink">{r.feature}</dt>
+                    <dd className="shrink-0 text-ink-70">{r[key] === true ? "Yes" : r[key]}</dd>
+                  </div>
+                ))}
+              </dl>
+              {notIncluded.length ? (
+                <p className="mt-2 text-[0.8125rem] text-ink-45">Not included: {notIncluded.map((r) => lowerFirst(r.feature)).join(", ")}.</p>
+              ) : null}
+              <Link href={cta.href} className={`${cta.primary ? "btn" : "btn-secondary"} mt-4 h-10 text-[0.9375rem]`}>
+                {cta.label}
+              </Link>
+            </section>
+          );
+        })}
+      </div>
+
+      <div className="mt-10 hidden overflow-x-auto md:block">
         <table className="w-full min-w-[40rem] border-collapse text-[0.9375rem]">
           <thead>
             <tr className="border-b-2 border-ink text-left align-bottom">

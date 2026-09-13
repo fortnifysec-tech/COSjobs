@@ -78,19 +78,37 @@ export function num(n: number): string {
 
 /** Register names are upper case. Show them as a person would write them. */
 export function titleCase(name: string): string {
-  const keep = new Set(["NHS", "UK", "LLP", "PLC", "GSK", "IT", "GB"]);
+  const keep = new Set(["NHS", "UK", "LLP", "PLC", "GSK", "IT", "GB", "BBC", "HSBC", "BP", "BT", "JLR", "MFT", "RBS"]);
+  // Short words with no vowel (MFT, JLR, HMRC) are initialisms. These are not.
+  const notInitialism = new Set(["LTD", "ST", "MR", "MRS", "DR", "CYF", "CWM"]);
   return name
     .split(" ")
     .map((w) => {
       if (keep.has(w)) return w;
+      if (/^[A-Z]{2,4}$/.test(w) && !/[AEIOU]/.test(w) && !notInitialism.has(w)) return w;
       if (w === "HC-ONE") return "HC-One";
       if (/^\(.*\)$/.test(w)) return `(${titleCase(w.slice(1, -1))})`;
-      return w.toLowerCase().replace(/(^|[-'’])([a-z])/g, (_m, sep: string, ch: string) => sep + ch.toUpperCase());
+      return (
+        w
+          .toLowerCase()
+          .replace(/(^|-)([a-z])/g, (_m, sep: string, ch: string) => sep + ch.toUpperCase())
+          // O'Brien, but Guy's and St Thomas'. Only capitalise after an apostrophe when a whole syllable follows.
+          .replace(/(['’])([a-z])(?=[a-z])/g, (_m, sep: string, ch: string) => sep + ch.toUpperCase())
+      );
     })
     .join(" ")
     .replace(/\bAnd\b/g, "and")
     .replace(/\bOf\b/g, "of")
     .replace(/(.)\bThe\b/g, "$1the");
+}
+
+/**
+ * An employer name as it should appear in running text. Adverts sometimes carry
+ * the register's upper-case legal name; a name with no lower-case letters is
+ * title-cased, anything else is shown as the employer wrote it.
+ */
+export function employerName(raw: string): string {
+  return /[a-z]/.test(raw) ? raw : titleCase(raw);
 }
 
 export function describeChange(c: { eventType: string; oldValue: string | null; newValue: string | null }): string {

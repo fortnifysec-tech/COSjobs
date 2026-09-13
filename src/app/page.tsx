@@ -6,7 +6,7 @@ import { hasDatabase } from "@/db/client";
 import { getJobBySlug, listJobs, type JobDetail } from "@/lib/data/jobs";
 import { recentRegisterChanges, siteStats, type RegisterChange } from "@/lib/data/sponsors";
 import { evidenceRows } from "@/lib/evidence";
-import { describeChange, isoDate, longDate, money, num, shortDate, titleCase } from "@/lib/format";
+import { describeChange, employerName, isoDate, longDate, money, num, shortDate, titleCase } from "@/lib/format";
 
 const CHECKS = [
   {
@@ -85,9 +85,9 @@ export default async function HomePage() {
             {data?.example ? (
               <>
                 <p className="mb-2 text-[0.875rem] text-ink-70">
-                  A record from this morning.{" "}
+                  A record, checked {shortDate(data.example.assessment.assessedAt)}.{" "}
                   <Link href={`/jobs/${data.example.job.slug}`} className="text-ink">
-                    {data.example.job.title}, {data.example.job.employerRawName}
+                    {data.example.job.title}, {employerName(data.example.job.employerRawName)}
                   </Link>
                 </p>
                 <EvidencePanel rows={evidenceRows(data.example)} verdict="pass" rulesVersion={rulesVersion} animate />
