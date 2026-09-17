@@ -26,7 +26,7 @@ export default async function CityPage({ params, searchParams }: PageProps<"/cit
   if (!c) notFound();
   const page = Number(Array.isArray(sp.page) ? sp.page[0] : sp.page) || 1;
   const all = sp.all === "1";
-  const roles = await listJobs({ city: c.city, rulesOnly: !all, page });
+  const roles = await listJobs({ locations: c.names, rulesOnly: !all, page });
   const now = new Date();
   const href = (p: number) => `/cities/${c.slug}?${all ? "all=1&" : ""}page=${p}`;
 

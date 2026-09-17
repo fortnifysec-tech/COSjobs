@@ -6,10 +6,13 @@ export const NAV = [
   { href: "/jobs", label: "Jobs" },
   { href: "/sponsors", label: "Sponsors" },
   { href: "/occupations", label: "Occupations" },
+  { href: "/visa", label: "Visa routes" },
   { href: "/guides", label: "Guides" },
   { href: "/how-it-works", label: "How we check" },
-  { href: "/pricing", label: "Pricing" },
 ] as const;
+
+/** Shown at the right of the header, next to sign in. */
+export const NAV_ASIDE = [{ href: "/pricing", label: "Pricing" }] as const;
 
 export const BROWSE = [
   { href: "/occupations", label: "Occupation codes" },
@@ -18,6 +21,13 @@ export const BROWSE = [
   { href: "/guides", label: "Guides" },
   { href: "/faq", label: "Questions and answers" },
   { href: "/about", label: "About" },
+] as const;
+
+/** Extra entries in the phone menu that are not in the bar. */
+export const MENU_EXTRA = [
+  { href: "/cities", label: "Towns and cities" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/faq", label: "Questions and answers" },
 ] as const;
 
 /**

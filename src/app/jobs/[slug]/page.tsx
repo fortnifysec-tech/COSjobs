@@ -43,7 +43,6 @@ export default async function JobPage({ params }: PageProps<"/jobs/[slug]">) {
   const panelVerdict = passes ? "pass" : verdict === "SALARY_UNKNOWN" ? "unknown" : "fail";
   const rules = isoDate(a.rulesVersion);
   const salary = salaryLabel(job.salaryMin, job.salaryMax, job.salaryPeriod);
-  const paragraphs = job.description.split(/\n\s*\n/).filter(Boolean);
   const insetClass = passes ? "inset-stamp" : verdict === "SALARY_UNKNOWN" ? "inset" : "inset-flag";
   const employer = employerName(job.employerRawName);
   const matched = a.negativeSignalMatched ?? a.positiveSignalSnippet;

@@ -76,11 +76,11 @@ export default async function HomePage() {
             </form>
 
             {stats ? (
-              <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-4 border-t hairline pt-5 sm:grid-cols-4">
-                <Figure n={stats.liveJobs} label="live roles checked" />
-                <Figure n={stats.meetingJobs} label="meet the rules today" />
-                <Figure n={stats.sponsorsWithRoles} label="sponsors with a passing role" />
-                <Figure n={stats.sponsorsOnRegister} label="licences on the register" />
+              <dl className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <Figure n={stats.liveJobs} label="live roles checked" href="/jobs?all=1" />
+                <Figure n={stats.meetingJobs} label="meet the rules today" href="/jobs" />
+                <Figure n={stats.sponsorsWithRoles} label="sponsors with a passing role" href="/sponsors" />
+                <Figure n={stats.sponsorsOnRegister} label="licences on the register" href="/visa" />
               </dl>
             ) : null}
           </div>
@@ -136,9 +136,9 @@ export default async function HomePage() {
               The method in full
             </Link>
           </div>
-          <ol className="mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-5">
+          <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {CHECKS.map((c) => (
-              <li key={c.n} className="rule-top pt-3">
+              <li key={c.n} className="card flex flex-col">
                 <p className="mono text-[0.8125rem] text-ink-45">{c.n}</p>
                 <h3 className="mt-1 text-[1.0625rem]">{c.title}</h3>
                 <p className="mt-2 text-[0.9375rem] leading-snug text-ink-70">{c.body}</p>
@@ -235,20 +235,22 @@ export default async function HomePage() {
   );
 }
 
-function Figure({ n, label }: { n: number; label: string }) {
+function Figure({ n, label, href }: { n: number; label: string; href: string }) {
   return (
     <div>
-      <dt className="sr-only">{label}</dt>
-      <dd className="mono text-[1.5rem] leading-none text-ink">{num(n)}</dd>
-      <dd className="mt-1 text-[0.8125rem] leading-snug text-ink-70">{label}</dd>
+      <Link href={href} className="card card-link h-full py-3">
+        <dt className="sr-only">{label}</dt>
+        <dd className="mono text-[1.5rem] leading-none text-ink">{num(n)}</dd>
+        <dd className="mt-1 text-[0.8125rem] leading-snug text-ink-70">{label}</dd>
+      </Link>
     </div>
   );
 }
 
 function BrowseList({ title, href, items }: { title: string; href: string; items: { href: string; label: string; lead?: string; n: number; of?: number; unit?: string }[] }) {
   return (
-    <div className="min-w-0">
-      <p className="border-b-2 border-ink pb-2 text-[0.875rem] font-bold">
+    <div className="card min-w-0">
+      <p className="card-head text-[0.9375rem] font-bold">
         <Link href={href} className="text-ink no-underline hover:underline">
           {title}
         </Link>
@@ -256,7 +258,7 @@ function BrowseList({ title, href, items }: { title: string; href: string; items
       <ul>
         {items.map((i) => (
           <li key={i.href} className="border-b hairline-soft">
-            <Link href={i.href} className="flex items-baseline justify-between gap-4 py-2 text-[0.9375rem] leading-snug no-underline hover:bg-card">
+            <Link href={i.href} className="flex items-baseline justify-between gap-4 py-2 text-[0.9375rem] leading-snug no-underline hover:bg-paper">
               <span className="min-w-0 text-ink">
                 {i.lead ? <span className="mono mr-2 text-[0.8125rem] text-ink-45">{i.lead}</span> : null}
                 {i.label}
@@ -269,6 +271,11 @@ function BrowseList({ title, href, items }: { title: string; href: string; items
           </li>
         ))}
       </ul>
+      <p className="mt-3 text-[0.875rem]">
+        <Link href={href} className="text-ink">
+          All {title.toLowerCase()}
+        </Link>
+      </p>
     </div>
   );
 }

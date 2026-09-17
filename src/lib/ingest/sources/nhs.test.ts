@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { extractSignals } from "@/lib/eligibility";
-import { parseAdvertHtml, parseSearchXml } from "./nhs";
+import { parseAdvertHtml, parseSearchXml, townFromLocation } from "./nhs";
 
 const XML = `<?xml version='1.0' encoding='UTF-8'?><nhsJobs><vacancyDetails><id>5604299</id><reference>C9273-26-0229</reference><title>Data Scientist/Software Engineer (AI and Computer Vision)</title><description>Previous applicants need not apply The NIHR...</description><employer>Moorfields Eye Hospital NHS Foundation Trust</employer><type>Fixed-Term</type><salary>£58133.00 to £65261.00</salary><closeDate>2026-09-23</closeDate><postDate>2026-09-16T15:15:34.938827718</postDate><url>https://beta.jobs.nhs.uk/candidate/jobadvert/C9273-26-0229</url><locations><location>London, EC1V 2PD</location></locations></vacancyDetails><totalPages>23</totalPages><totalResults>223</totalResults></nhsJobs>`;
 
@@ -56,5 +56,16 @@ describe("nhs advert page: duplicated sections", () => {
     expect(body.match(/Responsibilities text/g)).toHaveLength(1);
     expect(body).not.toContain("Date posted");
     expect(body).toContain("Essential");
+  });
+});
+
+describe("townFromLocation", () => {
+  it("drops the postcode and keeps the town", () => {
+    expect(townFromLocation("London, EC1V 2PD")).toBe("London");
+    expect(townFromLocation("317 01 Freeman Hospital, Newcastle upon Tyne, NE7 7DN")).toBe("Newcastle upon Tyne");
+    expect(townFromLocation("Whitchurch, Cardiff, CF14 7XB")).toBe("Cardiff");
+    expect(townFromLocation("Bristol")).toBe("Bristol");
+    expect(townFromLocation("STEVENAGE, SG1 4AB")).toBe("Stevenage");
+    expect(townFromLocation("")).toBe("UK");
   });
 });

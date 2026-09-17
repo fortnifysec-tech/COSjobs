@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { NavLinks } from "@/components/nav-links";
-import { NAV, SITE_NAME } from "@/lib/site";
+import { MENU_EXTRA, NAV, NAV_ASIDE, SITE_NAME } from "@/lib/site";
 
 export function SiteHeader({ registerLine }: { registerLine?: string }) {
   return (
@@ -24,13 +24,16 @@ export function SiteHeader({ registerLine }: { registerLine?: string }) {
               </span>
             </Link>
 
-            <nav aria-label="Primary" className="hidden self-stretch md:block">
-              <ul className="flex h-full items-center gap-7 text-[0.9375rem]">
+            <nav aria-label="Primary" className="hidden self-stretch lg:block">
+              <ul className="flex h-full items-center gap-6 text-[0.9375rem]">
                 <NavLinks items={NAV} variant="bar" />
               </ul>
             </nav>
 
-            <div className="hidden items-center gap-5 md:flex">
+            <div className="hidden items-center gap-5 lg:flex">
+              <ul className="flex items-center gap-5 text-[0.9375rem]">
+                <NavLinks items={NAV_ASIDE} variant="plain" />
+              </ul>
               <Link href="/sign-in" className="text-[0.9375rem] text-ink no-underline hover:underline">
                 Sign in
               </Link>
@@ -42,7 +45,7 @@ export function SiteHeader({ registerLine }: { registerLine?: string }) {
               </Link>
             </div>
 
-            <details className="group relative md:hidden">
+            <details className="group relative lg:hidden">
               <summary className="inline-flex h-9 cursor-pointer items-center border border-ink px-3 text-[0.9375rem] text-ink" aria-label="Open menu">
                 <span className="group-open:hidden">Menu</span>
                 <span className="hidden group-open:inline">Close</span>
@@ -50,6 +53,8 @@ export function SiteHeader({ registerLine }: { registerLine?: string }) {
               <div className="absolute right-0 top-11 z-40 w-[calc(100vw-2rem)] max-w-xs border-2 border-ink bg-card">
                 <ul className="divide-y divide-rule-soft text-[0.9375rem]">
                   <NavLinks items={NAV} variant="menu" />
+                  <li aria-hidden className="border-t-2 border-ink" />
+                  <NavLinks items={MENU_EXTRA} variant="menu" />
                   <li>
                     <Link href="/sign-in" className="block px-4 py-3 text-ink no-underline hover:bg-paper">
                       Sign in

@@ -110,7 +110,7 @@ export async function occupationDetail(socCode: string): Promise<OccupationDetai
 
 /* ---------- cities ---------- */
 
-export type CitySummary = { city: string; slug: string; live: number; meeting: number; sponsorsInTown: number };
+export type CitySummary = { city: string; slug: string; /** Every spelling that maps to this slug. */ names: string[]; live: number; meeting: number; sponsorsInTown: number };
 
 export function citySlug(city: string) {
   return slugify(city);
@@ -135,7 +135,20 @@ export async function cityIndex(): Promise<CitySummary[]> {
         .groupBy(sql`lower(${sponsors.town})`)
     : [];
   const byTown = new Map(townCounts.map((t) => [t.town, t.n]));
-  return rows.map((r) => ({ city: r.city, slug: citySlug(r.city), live: r.live, meeting: r.meeting, sponsorsInTown: byTown.get(r.city.toLowerCase()) ?? 0 }));
+  // "Stoke-on-Trent" and "Stoke on Trent" share a slug; merge them under the first spelling seen.
+  const merged = new Map<string, CitySummary>();
+  for (const r of rows) {
+    const slug = citySlug(r.city);
+    const cur = merged.get(slug);
+    const sponsorsInTown = byTown.get(r.city.toLowerCase()) ?? 0;
+    if (cur) {
+      cur.names.push(r.city);
+      cur.live += r.live;
+      cur.meeting += r.meeting;
+      cur.sponsorsInTown = Math.max(cur.sponsorsInTown, sponsorsInTown);
+    } else merged.set(slug, { city: r.city, slug, names: [r.city], live: r.live, meeting: r.meeting, sponsorsInTown });
+  }
+  return [...merged.values()].sort((a, b) => b.live - a.live || a.city.localeCompare(b.city));
 }
 
 export async function cityDetail(slug: string): Promise<(CitySummary & { verdicts: { verdict: string; n: number }[]; topSponsors: { id: string; rawName: string; live: number; meeting: number }[] }) | null> {
@@ -149,14 +162,14 @@ export async function cityDetail(slug: string): Promise<(CitySummary & { verdict
       .select({ verdict: la.verdict, n: count() })
       .from(jobs)
       .innerJoin(la, eq(la.jobId, jobs.id))
-      .where(and(eq(jobs.isLive, true), eq(jobs.location, city.city)))
+      .where(and(eq(jobs.isLive, true), inArray(jobs.location, city.names)))
       .groupBy(la.verdict),
     d
       .select({ id: sponsors.id, rawName: sponsors.rawName, live: count(), meeting: sql<number>`count(*) filter (where ${inArray(la.verdict, MEETS_RULES)})`.mapWith(Number) })
       .from(jobs)
       .innerJoin(la, eq(la.jobId, jobs.id))
       .innerJoin(sponsors, eq(sponsors.id, la.sponsorId))
-      .where(and(eq(jobs.isLive, true), eq(jobs.location, city.city)))
+      .where(and(eq(jobs.isLive, true), inArray(jobs.location, city.names)))
       .groupBy(sponsors.id, sponsors.rawName)
       .orderBy(desc(sql`count(*) filter (where ${inArray(la.verdict, MEETS_RULES)})`), desc(count()))
       .limit(10),

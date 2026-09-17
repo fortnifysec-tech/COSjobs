@@ -128,6 +128,28 @@
     border-left: 4px solid var(--ink);
     padding-left: 1rem;
   }
+
+  /* A flat panel: white surface, hairline border, no shadow. Used in grids. */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 1.125rem 1.25rem;
+  }
+  .card-link {
+    display: block;
+    text-decoration: none;
+    transition: border-color 120ms ease;
+  }
+  .card-link:hover,
+  .card-link:focus-visible {
+    border-color: var(--ink);
+  }
+  .card-head {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
   .inset-flag {
     border-left: 4px solid var(--flag);
     padding-left: 1rem;

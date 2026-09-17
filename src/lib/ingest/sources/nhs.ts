@@ -4,6 +4,7 @@
  * has ticked it, a "Certificate of Sponsorship" section.
  */
 import { htmlToText, unescapeHtml } from "../html";
+import { titleCase } from "@/lib/format";
 import { parseSalaryField } from "../salary";
 import type { FetchOptions, JobSource, RawJob } from "../types";
 
@@ -139,10 +140,27 @@ export function parseAdvertHtml(html: string): string | null {
   return out.join("\n\n").replace(/^Skip to main content.*$/m, "").trim();
 }
 
+const POSTCODE = /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i;
+
+/**
+ * The town from an NHS location string. "London, EC1V 2PD" gives London;
+ * "317 01 Freeman Hospital, Newcastle upon Tyne, NE7 7DN" gives Newcastle
+ * upon Tyne: the postcode is dropped and the last remaining part is the town.
+ * Exported for tests.
+ */
+export function townFromLocation(location: string): string {
+  const parts = location.split(",").map((p) => p.trim()).filter(Boolean);
+  if (parts.length && POSTCODE.test(parts[parts.length - 1]!)) parts.pop();
+  const town = (parts[parts.length - 1] ?? "").replace(/\s+/g, " ");
+  if (!town) return "UK";
+  // Some trusts shout: "STEVENAGE". Title-case those, leave mixed case alone.
+  return /[a-z]/.test(town) ? town : titleCase(town);
+}
+
 function toRaw(v: Vacancy, description: string): RawJob | null {
   if (!v.id || !v.title || !v.employer) return null;
   const salary = parseSalaryField(v.salary);
-  const town = v.location.split(",")[0]?.trim() || "UK";
+  const town = townFromLocation(v.location);
   const postedAt = v.postDate ? new Date(v.postDate.slice(0, 19)) : new Date();
   const closesAt = v.closeDate ? new Date(`${v.closeDate}T23:59:59`) : null;
   return {

@@ -27,6 +27,8 @@ export type JobFilters = {
   soc?: string[];
   salaryMin?: number;
   city?: string;
+  /** Exact location strings, for town pages that merge spellings. */
+  locations?: string[];
   route?: string;
   postedDays?: number;
   rulesOnly: boolean;
@@ -111,6 +113,7 @@ function buildWhere(f: JobFilters, la: ReturnType<typeof latestAssessment>): SQL
   if (f.soc?.length) conds.push(inArray(la.socCode, f.soc));
   if (f.salaryMin) conds.push(gte(la.salaryAssessedAnnual, f.salaryMin));
   if (f.city) conds.push(ilike(jobs.location, `%${f.city.trim()}%`));
+  if (f.locations?.length) conds.push(inArray(jobs.location, f.locations));
   if (f.route) conds.push(sql`${sponsors.routes} @> ARRAY[${f.route}]::text[]`);
   if (f.postedDays) conds.push(gte(jobs.postedAt, sql`now() - make_interval(days => ${f.postedDays})`));
   return conds;

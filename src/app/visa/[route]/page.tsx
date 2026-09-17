@@ -48,6 +48,24 @@ export default async function RoutePage({ params, searchParams }: PageProps<"/vi
           {info ? (
             <>
               <p className="prose-lede mt-4 max-w-[58ch]">{info.summary}</p>
+              <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-y hairline py-4 sm:grid-cols-4">
+                <div>
+                  <dt className="text-[0.8125rem] text-ink-70">Open jobs market</dt>
+                  <dd className="mt-0.5 text-[1rem]">{info.openMarket ? "Yes" : "No"}</dd>
+                </div>
+                <div>
+                  <dt className="text-[0.8125rem] text-ink-70">Settlement</dt>
+                  <dd className="mt-0.5 text-[1rem]">{info.settlement === "yes" ? "Yes" : info.settlement === "some" ? "Some cases" : "No"}</dd>
+                </div>
+                <div>
+                  <dt className="text-[0.8125rem] text-ink-70">Longest grant</dt>
+                  <dd className="mt-0.5 text-[1rem]">{info.maxStay}</dd>
+                </div>
+                <div>
+                  <dt className="text-[0.8125rem] text-ink-70">Licences</dt>
+                  <dd className="mono mt-0.5 text-[1rem]">{num(r.sponsors)}</dd>
+                </div>
+              </dl>
               <div className={`mt-6 ${info.checked ? "inset-stamp" : "inset"}`}>
                 <p className="text-[0.9375rem] leading-relaxed text-ink">
                   {info.checked
