@@ -43,3 +43,6 @@ next-env.d.ts
 
 # local captures
 screenshots/
+
+# playwright browsers (devcontainer)
+.playwright/
