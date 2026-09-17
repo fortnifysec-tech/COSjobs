@@ -30,10 +30,7 @@ shows its working. The audience trusts GOV.UK visual language.
 
 ## Treat as bugs
 - Gradients, glassmorphism, card shadows, decorative blur.
-- Cards with shadows or large radii. A card here is `.card`: white surface,
-  1px hairline, 3px radius, no shadow. Grids of cards are fine for browsing
-  (routes, guides, cities, the method steps); records and role lists stay as
-  ledger rows.
+- Three-column grids of identical rounded cards.
 - Green anywhere. Verified is oxblood.
 - All-caps eyebrow labels above headings.
 - "→" appended to link or button text.

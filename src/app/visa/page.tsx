@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BrowseNav } from "@/components/browse-nav";
+import { Ledger, LedgerRow } from "@/components/ledger";
 import { routeIndex, type RouteSummary } from "@/lib/data/browse";
 import { num } from "@/lib/format";
 import { ROUTE_GROUPS, routeInfo } from "@/lib/routes";
@@ -11,36 +12,23 @@ export const revalidate = 1800;
 export const metadata: Metadata = {
   title: "Sponsored visa routes",
   description:
-    "Every sponsored work route on the register of licensed sponsors, grouped by who can use it, with how many employers hold a licence for each and which lead to settlement.",
+    "Every sponsored work route on the register of licensed sponsors, with how many employers hold a licence for it and which routes a job seeker can actually use.",
 };
 
 export default async function VisaRoutesPage() {
   const routes = await routeIndex();
   const other = routes.filter((r) => !routeInfo(r.route));
-  const skilled = routes.find((r) => r.route === "Skilled Worker");
 
   return (
     <div className="mx-auto max-w-[1200px] px-4 py-6 sm:px-6 md:py-8">
       <BrowseNav current="/visa" />
-      <div className="mt-8 grid gap-8 border-b-2 border-ink pb-6 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:gap-12">
-        <div>
-          <h1 className="text-[1.75rem] leading-tight sm:text-[2rem]">Sponsored visa routes</h1>
-          <p className="prose-lede mt-3 max-w-[58ch]">
-            A sponsor licence names the routes an employer may sponsor on. The routes are grouped here by who can
-            use them, because a licence for the wrong route is no use to a job seeker however good the employer.
-          </p>
-        </div>
-        {skilled ? (
-          <Link href="/visa/skilled-worker" className="card card-link self-start">
-            <p className="text-[0.8125rem] text-ink-70">The route this site checks</p>
-            <p className="mt-1 text-[1.125rem] font-bold text-ink">Skilled Worker</p>
-            <dl className="mt-3 grid grid-cols-3 gap-3 border-t hairline pt-3">
-              <Figure n={skilled.sponsors} label="licences" />
-              <Figure n={skilled.live} label="live roles" />
-              <Figure n={skilled.meeting} label="pass today" />
-            </dl>
-          </Link>
-        ) : null}
+      <div className="mt-8 border-b-2 border-ink pb-4">
+        <h1 className="text-[1.75rem] leading-tight sm:text-[2rem]">Sponsored visa routes</h1>
+        <p className="prose-lede mt-3 max-w-[62ch]">
+          A sponsor licence names the routes an employer may sponsor on. Most licences cover the Skilled Worker route,
+          which is the only one this site checks role by role. The others are listed so you can tell, from a
+          sponsor’s page, whether a licence is any use to you.
+        </p>
       </div>
 
       {ROUTE_GROUPS.map((g) => {
@@ -52,32 +40,25 @@ export default async function VisaRoutesPage() {
               {g.title}
             </h2>
             <p className="mt-1 max-w-[70ch] text-[0.9375rem] text-ink-70">{g.lede}</p>
-            <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Ledger className="mt-4">
               {items.map((r) => (
-                <RouteCard key={r.slug} r={r} />
+                <RouteRow key={r.slug} r={r} />
               ))}
-            </ul>
+            </Ledger>
           </section>
         );
       })}
 
       {other.length ? (
         <section className="mt-10" aria-labelledby="other">
-          <h2 id="other" className="text-[1.25rem]">
+          <h2 id="other" className="text-[1.125rem]">
             Also on the register
           </h2>
-          <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Ledger className="mt-3">
             {other.map((r) => (
-              <li key={r.slug}>
-                <Link href={`/visa/${r.slug}`} className="card card-link h-full">
-                  <p className="text-[1.0625rem] font-bold leading-snug text-ink">{r.route}</p>
-                  <p className="mono mt-2 text-[0.875rem] text-ink-70">
-                    {num(r.sponsors)} <span className="font-sans text-ink-45">licences</span>
-                  </p>
-                </Link>
-              </li>
+              <LedgerRow key={r.slug} href={`/visa/${r.slug}`} title={r.route} figures={[{ value: num(r.sponsors), label: "licences" }]} />
             ))}
-          </ul>
+          </Ledger>
         </section>
       ) : null}
 
@@ -92,31 +73,18 @@ export default async function VisaRoutesPage() {
   );
 }
 
-function Figure({ n, label }: { n: number; label: string }) {
-  return (
-    <div>
-      <dd className="mono text-[1.125rem] leading-none text-ink">{num(n)}</dd>
-      <dt className="mt-1 text-[0.75rem] text-ink-45">{label}</dt>
-    </div>
-  );
-}
-
-function RouteCard({ r }: { r: RouteSummary }) {
+function RouteRow({ r }: { r: RouteSummary }) {
   const info = routeInfo(r.route)!;
   const settlement = info.settlement === "yes" ? "Leads to settlement" : info.settlement === "some" ? "Settlement in some cases" : "No settlement";
   return (
-    <li>
-      <Link href={`/visa/${r.slug}`} className="card card-link flex h-full flex-col">
-        <p className="text-[1.0625rem] font-bold leading-snug text-ink">{r.route}</p>
-        <p className="mt-2 flex-1 text-[0.9375rem] leading-snug text-ink-70">{info.summary}</p>
-        <dl className="mt-4 flex flex-wrap items-end justify-between gap-x-4 gap-y-2 border-t hairline pt-3">
-          <div className="flex gap-5">
-            <Figure n={r.sponsors} label="licences" />
-            {info.checked ? <Figure n={r.meeting} label="roles pass" /> : null}
-          </div>
-          <dd className={`text-[0.75rem] ${info.settlement === "yes" ? "text-ink" : "text-ink-45"}`}>{settlement}</dd>
-        </dl>
-      </Link>
-    </li>
+    <LedgerRow
+      href={`/visa/${r.slug}`}
+      title={r.route}
+      note={`${info.summary} ${settlement}.`}
+      figures={[
+        { value: num(r.sponsors), label: "licences" },
+        { value: num(r.meeting), label: "roles pass", muted: !info.checked },
+      ]}
+    />
   );
 }

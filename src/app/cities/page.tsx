@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BrowseNav } from "@/components/browse-nav";
+import { Ledger, LedgerRow } from "@/components/ledger";
 import { cityIndex } from "@/lib/data/browse";
 import { num } from "@/lib/format";
 
@@ -14,8 +15,6 @@ export const metadata: Metadata = {
 
 export default async function CitiesPage() {
   const cities = await cityIndex();
-  const major = cities.filter((c) => c.live >= 5);
-  const rest = cities.filter((c) => c.live < 5);
   return (
     <div className="mx-auto max-w-[1200px] px-4 py-6 sm:px-6 md:py-8">
       <BrowseNav current="/cities" />
@@ -27,51 +26,20 @@ export default async function CitiesPage() {
           sites across the country.
         </p>
       </div>
-
-      <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {major.map((c) => (
-          <li key={c.slug}>
-            <Link href={`/cities/${c.slug}`} className="card card-link h-full">
-              <p className="text-[1.125rem] font-bold leading-snug text-ink">{c.city}</p>
-              <dl className="mt-3 grid grid-cols-3 gap-2 border-t hairline pt-3">
-                <div>
-                  <dd className="mono text-[1.125rem] leading-none text-ink">{num(c.meeting)}</dd>
-                  <dt className="mt-1 text-[0.75rem] leading-tight text-ink-45">pass</dt>
-                </div>
-                <div>
-                  <dd className="mono text-[1.125rem] leading-none text-ink-70">{num(c.live)}</dd>
-                  <dt className="mt-1 text-[0.75rem] leading-tight text-ink-45">live</dt>
-                </div>
-                <div>
-                  <dd className="mono text-[1.125rem] leading-none text-ink-70">{num(c.sponsorsInTown)}</dd>
-                  <dt className="mt-1 text-[0.75rem] leading-tight text-ink-45">sponsors</dt>
-                </div>
-              </dl>
-            </Link>
-          </li>
+      <Ledger className="mt-6">
+        {cities.map((c) => (
+          <LedgerRow
+            key={c.slug}
+            href={`/cities/${c.slug}`}
+            title={c.city}
+            figures={[
+              { value: num(c.meeting), label: "meet the rules" },
+              { value: num(c.live), label: "live roles", muted: true },
+              { value: num(c.sponsorsInTown), label: "sponsors registered", muted: true },
+            ]}
+          />
         ))}
-      </ul>
-
-      {rest.length ? (
-        <section className="mt-10" aria-labelledby="more">
-          <h2 id="more" className="text-[1.125rem]">
-            Fewer than five roles
-          </h2>
-          <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-[0.9375rem]">
-            {rest.map((c) => (
-              <li key={c.slug}>
-                <Link href={`/cities/${c.slug}`} className="text-ink">
-                  {c.city}
-                </Link>
-                <span className="mono ml-1 text-[0.8125rem] text-ink-45">
-                  {c.meeting}/{c.live}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
-
+      </Ledger>
       {cities.length === 0 ? <p className="mt-4 text-ink-70">No roles yet.</p> : null}
       <p className="mt-8 text-[0.875rem] text-ink-45">
         Remote roles are not listed by town.{" "}
