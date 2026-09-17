@@ -33,6 +33,18 @@ export default async function GuidePage({ params }: PageProps<"/guides/[slug]">)
           <h1 className="text-[1.875rem] leading-[1.1] sm:text-[2.375rem]">{g.title}</h1>
           <p className="prose-lede mt-4 max-w-[58ch]">{g.summary}</p>
           <p className="mono mt-3 text-[0.8125rem] text-ink-45">Figures checked against GOV.UK on {longDate(g.checked)}.</p>
+          <nav aria-label="On this page" className="mt-5 border-y hairline py-3 md:hidden">
+            <p className="text-[0.8125rem] font-bold">On this page</p>
+            <ol className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[0.9375rem]">
+              {g.toc.map((t) => (
+                <li key={t.id}>
+                  <a href={`#${t.id}`} className="text-ink-70">
+                    {t.label}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
           <div className="prose-body mt-6 max-w-[68ch] space-y-4 text-[1.0625rem] leading-relaxed">{g.body}</div>
           <section className="mt-10 border-t-2 border-ink pt-3" aria-labelledby="sources">
             <h2 id="sources" className="text-[1rem]">
@@ -56,6 +68,23 @@ export default async function GuidePage({ params }: PageProps<"/guides/[slug]">)
               and use a regulated adviser if your case is not simple.
             </p>
           </div>
+          <nav aria-label="On this page" className="mt-8 hidden md:block">
+            <p className="border-b-2 border-ink pb-2 text-[1.125rem] font-bold">On this page</p>
+            <ol className="mt-2 space-y-1.5 text-[0.9375rem]">
+              {g.toc.map((t) => (
+                <li key={t.id}>
+                  <a href={`#${t.id}`} className="text-ink-70 no-underline hover:text-ink hover:underline">
+                    {t.label}
+                  </a>
+                </li>
+              ))}
+              <li>
+                <a href="#sources" className="text-ink-70 no-underline hover:text-ink hover:underline">
+                  Sources
+                </a>
+              </li>
+            </ol>
+          </nav>
           <h2 className="mt-8 border-b-2 border-ink pb-2 text-[1.125rem]">Other guides</h2>
           <ul className="divide-y divide-rule-soft">
             {others.map((o) => (

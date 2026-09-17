@@ -107,6 +107,27 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {data ? (
+        <section className="border-b hairline">
+          <div className="mx-auto max-w-[1200px] px-4 py-12 sm:px-6">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
+              <div>
+                <h2 className="text-[1.625rem] leading-tight">Checked today</h2>
+                <p className="mt-1 text-[0.9375rem] text-ink-70">Most recent first. Failed roles are listed too, so you can see why.</p>
+              </div>
+              <Link href="/jobs" className="text-[0.9375rem] text-ink">
+                All {num(stats!.liveJobs)} roles
+              </Link>
+            </div>
+            <ul className="mt-6 border-t-2 border-ink">
+              {data.recent.map((job) => (
+                <JobRow key={job.id} job={job} now={data.now} />
+              ))}
+            </ul>
+          </div>
+        </section>
+      ) : null}
+
       <section className="border-b hairline">
         <div className="mx-auto max-w-[1200px] px-4 py-12 sm:px-6">
           <div className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
@@ -130,27 +151,6 @@ export default async function HomePage() {
           </p>
         </div>
       </section>
-
-      {data ? (
-        <section className="border-b hairline">
-          <div className="mx-auto max-w-[1200px] px-4 py-12 sm:px-6">
-            <div className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
-              <div>
-                <h2 className="text-[1.625rem] leading-tight">Checked today</h2>
-                <p className="mt-1 text-[0.9375rem] text-ink-70">Most recent first. Failed roles are listed too, so you can see why.</p>
-              </div>
-              <Link href="/jobs" className="text-[0.9375rem] text-ink">
-                All {num(stats!.liveJobs)} roles
-              </Link>
-            </div>
-            <ul className="mt-6 border-t-2 border-ink">
-              {data.recent.map((job) => (
-                <JobRow key={job.id} job={job} now={data.now} />
-              ))}
-            </ul>
-          </div>
-        </section>
-      ) : null}
 
       {data ? (
         <section className="border-b hairline">

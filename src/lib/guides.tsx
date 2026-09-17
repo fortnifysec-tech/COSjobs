@@ -12,6 +12,8 @@ export type Guide = {
   /** Date the figures were checked against GOV.UK. */
   checked: string;
   sources: { label: string; href: string }[];
+  /** Section anchors, in order, for the "On this page" list. */
+  toc: { id: string; label: string }[];
   body: ReactNode;
 };
 
@@ -57,6 +59,12 @@ export const GUIDES: Guide[] = [
     sources: [
       { label: "Appendix Skilled Worker", href: "https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-skilled-worker" },
       { label: "Appendix Skilled Occupations", href: "https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-skilled-occupations" },
+    ],
+    toc: [
+      { id: "figures", label: "The figures since 22 July 2025" },
+      { id: "going-rate", label: "The going rate" },
+      { id: "range", label: "Why a range is tested at the bottom" },
+      { id: "discounts", label: "Discounts we do not apply" },
     ],
     body: (
       <>
@@ -117,6 +125,13 @@ export const GUIDES: Guide[] = [
       { label: "Health and Care Worker visa", href: "https://www.gov.uk/health-care-worker-visa" },
       { label: "Immigration health surcharge", href: "https://www.gov.uk/healthcare-immigration-application" },
       { label: "UK visa sponsorship for employers", href: "https://www.gov.uk/uk-visa-sponsorship-employers" },
+    ],
+    toc: [
+      { id: "fees", label: "Application fee" },
+      { id: "ihs", label: "Immigration health surcharge" },
+      { id: "maintenance", label: "Money you must show" },
+      { id: "example", label: "A worked example" },
+      { id: "employer", label: "What the employer pays" },
     ],
     body: (
       <>
@@ -179,6 +194,12 @@ export const GUIDES: Guide[] = [
       { label: "Appendix Skilled Occupations, Table 3", href: "https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-skilled-occupations" },
       { label: "NHS Jobs", href: "https://www.jobs.nhs.uk/" },
     ],
+    toc: [
+      { id: "section", label: "The Certificate of Sponsorship section" },
+      { id: "pay-scale", label: "Pay-scale occupations" },
+      { id: "health-care", label: "Health and Care Worker visa" },
+      { id: "bank", label: "Bank, agency and fixed-term posts" },
+    ],
     body: (
       <>
         <p>
@@ -233,6 +254,13 @@ export const GUIDES: Guide[] = [
       { label: "Register of licensed sponsors: workers", href: "https://www.gov.uk/government/publications/register-of-licensed-sponsors-workers" },
       { label: "Sponsor a worker: guidance for sponsors", href: "https://www.gov.uk/government/collections/sponsorship-information-for-employers-and-educators" },
     ],
+    toc: [
+      { id: "rating", label: "The rating" },
+      { id: "route", label: "The route" },
+      { id: "names", label: "Names on the register" },
+      { id: "missing", label: "When an employer is not there" },
+      { id: "tenure", label: "How long a sponsor has been licensed" },
+    ],
     body: (
       <>
         <p>
@@ -280,6 +308,12 @@ export const GUIDES: Guide[] = [
       { label: "Skilled Worker visa: update your visa", href: "https://www.gov.uk/skilled-worker-visa/update-your-visa" },
       { label: "Skilled Worker visa: how much it costs", href: "https://www.gov.uk/skilled-worker-visa/how-much-it-costs" },
     ],
+    toc: [
+      { id: "new-role", label: "The new role is checked from scratch" },
+      { id: "cost", label: "Cost and timing" },
+      { id: "licence-lost", label: "If your sponsor loses its licence" },
+      { id: "same-employer", label: "Changes with the same employer" },
+    ],
     body: (
       <>
         <p>
@@ -320,6 +354,11 @@ export const GUIDES: Guide[] = [
     sources: [
       { label: "Skilled Worker visa: your partner and children", href: "https://www.gov.uk/skilled-worker-visa/your-partner-and-children" },
       { label: "Immigration health surcharge", href: "https://www.gov.uk/healthcare-immigration-application" },
+    ],
+    toc: [
+      { id: "cost", label: "What each dependant pays" },
+      { id: "work", label: "What dependants can do" },
+      { id: "not-allowed", label: "Roles that no longer allow dependants" },
     ],
     body: (
       <>

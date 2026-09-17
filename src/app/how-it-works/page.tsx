@@ -98,6 +98,15 @@ export default async function HowItWorksPage() {
               an employer whose entry changed is re-run before the site updates.
             </p>
 
+            <h2 id="sources">Where the adverts come from</h2>
+            <p>
+              NHS Jobs, read through its public search and each advert page, including the Certificate of
+              Sponsorship section a trust adds when it will sponsor the post. And the careers sites of employers on
+              the register that publish their vacancies openly, each tied by hand to the employer&rsquo;s name on
+              the register. Every advert is re-read daily and marked closed when it disappears or passes its closing
+              date. We do not take listings from recruiters or paid feeds.
+            </p>
+
             <h2 id="bands">Sponsor activity bands</h2>
             <p>
               The band next to an employer is our own measure, not a Home Office one. It combines how many eligible
@@ -158,6 +167,7 @@ export default async function HowItWorksPage() {
                 ["#salary", "Salary"],
                 ["#record", "The record"],
                 ["#register", "Reading the register"],
+                ["#sources", "Where the adverts come from"],
                 ["#bands", "Activity bands"],
                 ["#limits", "What we cannot tell you"],
               ].map(([href, label]) => (

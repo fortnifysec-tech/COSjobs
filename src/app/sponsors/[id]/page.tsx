@@ -58,21 +58,64 @@ export default async function SponsorPage({ params }: PageProps<"/sponsors/[id]"
             {activity ? <p className="mt-1 text-[0.9375rem] text-ink-70">{BAND_SENTENCE[activity.band]}</p> : null}
           </div>
 
+          <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-y hairline py-4 sm:grid-cols-4">
+            <div>
+              <dt className="text-[0.8125rem] text-ink-70">Rating</dt>
+              <dd className="mono mt-0.5 text-[1rem]">{sponsor.rating ?? "None"}</dd>
+            </div>
+            <div>
+              <dt className="text-[0.8125rem] text-ink-70">Skilled Worker route</dt>
+              <dd className="mt-0.5 text-[1rem]">{sponsor.routes.includes("Skilled Worker") ? "Yes" : "No"}{sponsor.routes.length > 1 ? ` · ${sponsor.routes.length} routes` : ""}</dd>
+            </div>
+            <div>
+              <dt className="text-[0.8125rem] text-ink-70">Live roles</dt>
+              <dd className="mt-0.5 text-[1rem]">
+                <span className="mono">{num(meeting)}</span> of <span className="mono">{num(live)}</span> pass
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[0.8125rem] text-ink-70">On the register</dt>
+              <dd className="mt-0.5 text-[1rem]">{sponsor.licenceSinceKnown ? `since ${shortDate(sponsor.firstSeenAt)}` : `before ${shortDate(sponsor.firstSeenAt)}`}</dd>
+            </div>
+          </dl>
+
           <section className="mt-10" aria-labelledby="roles">
             <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b-2 border-ink pb-2">
               <h2 id="roles" className="text-[1.125rem]">
-                Live roles
+                Roles that meet the rules
               </h2>
               <p className="text-[0.875rem] text-ink-70">
                 <span className="mono text-ink">{num(meeting)}</span> of <span className="mono text-ink">{num(live)}</span> meet the rules
               </p>
             </div>
             {roles.length ? (
-              <ul>
-                {roles.map((j) => (
-                  <JobRow key={j.id} job={j} now={now} showEmployer={false} />
-                ))}
-              </ul>
+              <>
+                <ul>
+                  {roles
+                    .filter((j) => MEETS_RULES.includes(j.verdict))
+                    .map((j) => (
+                      <JobRow key={j.id} job={j} now={now} showEmployer={false} />
+                    ))}
+                </ul>
+                {roles.some((j) => !MEETS_RULES.includes(j.verdict)) ? (
+                  <details className="group mt-4" open={meeting === 0}>
+                    <summary className="cursor-pointer list-none border-b hairline pb-2 text-[0.9375rem]">
+                      <span className="font-medium text-ink">Roles that did not pass</span>
+                      <span className="mono ml-2 text-ink-45">{num(roles.filter((j) => !MEETS_RULES.includes(j.verdict)).length)}</span>
+                      <span className="ml-3 text-ink underline underline-offset-4 group-open:hidden">Show</span>
+                      <span className="ml-3 hidden text-ink underline underline-offset-4 group-open:inline">Hide</span>
+                      <span className="block text-[0.875rem] text-ink-70">Listed with the check that failed, so you can see why.</span>
+                    </summary>
+                    <ul>
+                      {roles
+                        .filter((j) => !MEETS_RULES.includes(j.verdict))
+                        .map((j) => (
+                          <JobRow key={j.id} job={j} now={now} showEmployer={false} />
+                        ))}
+                    </ul>
+                  </details>
+                ) : null}
+              </>
             ) : (
               <p className="mt-4 max-w-[56ch] text-[0.9375rem] text-ink-70">
                 No live roles from this employer in the sources we read. Their licence still stands; it is the
