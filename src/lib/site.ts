@@ -37,3 +37,17 @@ export const PLANS = [
   { id: "plus", name: "Seeker Plus", price: "£14.99", per: "a month", what: "Seeker, plus CV tailoring against the advert, an application pipeline and 24 hours' early access to new sponsors." },
   { id: "watch", name: "Sponsor Watch", price: "£2.99", per: "a month", what: "A daily check on your own employer's licence, with a shortlist of open roles ready if it changes." },
 ] as const;
+
+/** How a job source is named to readers. */
+export function sourceLabel(source: string): string {
+  switch (source) {
+    case "nhs-jobs":
+      return "NHS Jobs";
+    case "greenhouse":
+      return "Employer careers site";
+    case "employer-site":
+      return "Employer careers site";
+    default:
+      return source.replace(/-/g, " ").replace(/^\w/, (c) => c.toUpperCase());
+  }
+}

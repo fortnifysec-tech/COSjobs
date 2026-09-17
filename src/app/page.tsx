@@ -256,8 +256,8 @@ function BrowseList({ title, href, items }: { title: string; href: string; items
       <ul>
         {items.map((i) => (
           <li key={i.href} className="border-b hairline-soft">
-            <Link href={i.href} className="flex items-baseline justify-between gap-4 py-2 text-[0.9375rem] no-underline hover:bg-card">
-              <span className="min-w-0 truncate text-ink">
+            <Link href={i.href} className="flex items-baseline justify-between gap-4 py-2 text-[0.9375rem] leading-snug no-underline hover:bg-card">
+              <span className="min-w-0 text-ink">
                 {i.lead ? <span className="mono mr-2 text-[0.8125rem] text-ink-45">{i.lead}</span> : null}
                 {i.label}
               </span>

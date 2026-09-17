@@ -38,3 +38,23 @@ describe("nhs advert page", () => {
     expect(s.positiveSnippet).toMatch(/require current Skilled worker sponsorship to work in the UK are welcome/);
   });
 });
+
+describe("nhs advert page: duplicated sections", () => {
+  const DUP = `<main>
+<h2>Job summary</h2><p>Summary text that is long enough to count as a real paragraph of an advert.</p>
+<h2>Details</h2><p>Date posted</p><p>16 September 2026</p><p>Band</p><p>Band 7</p>
+<h2>Job description</h2><h3>Job responsibilities</h3><p>Responsibilities text that is also long enough to be treated as a paragraph here.</p>
+<h2>Person Specification</h2><h3>Qualifications</h3><p>Essential</p><p>A degree in a relevant subject with registration where it applies to the post.</p>
+<h2>Job description</h2><h3>Job responsibilities</h3><p>Responsibilities text that is also long enough to be treated as a paragraph here.</p>
+<h2>Person Specification</h2><h3>Qualifications</h3><p>Essential</p><p>A degree in a relevant subject with registration where it applies to the post.</p>
+<h2>Employer details</h2><p>Trust</p>
+</main>`;
+  it("keeps each section once and drops the details block", () => {
+    const body = parseAdvertHtml(DUP)!;
+    expect(body.match(/Job description/g)).toHaveLength(1);
+    expect(body.match(/Person Specification/g)).toHaveLength(1);
+    expect(body.match(/Responsibilities text/g)).toHaveLength(1);
+    expect(body).not.toContain("Date posted");
+    expect(body).toContain("Essential");
+  });
+});

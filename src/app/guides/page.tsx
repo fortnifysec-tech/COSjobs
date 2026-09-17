@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BrowseNav } from "@/components/browse-nav";
 import { longDate } from "@/lib/format";
 import { GUIDES } from "@/lib/guides";
 
@@ -10,8 +11,9 @@ export const metadata: Metadata = {
 
 export default function GuidesPage() {
   return (
-    <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6 md:py-10">
-      <div className="border-b-2 border-ink pb-4">
+    <div className="mx-auto max-w-[1200px] px-4 py-6 sm:px-6 md:py-8">
+      <BrowseNav current="/guides" />
+      <div className="mt-8 border-b-2 border-ink pb-4">
         <h1 className="text-[1.75rem] leading-tight sm:text-[2rem]">Guides</h1>
         <p className="prose-lede mt-3 max-w-[62ch]">
           Short, factual and dated. Each guide lists the GOV.UK pages it was checked against. None of it is immigration advice.

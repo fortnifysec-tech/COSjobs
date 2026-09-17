@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AdvertBody } from "@/components/advert-body";
+import { sourceLabel } from "@/lib/site";
 import { EvidencePanel } from "@/components/evidence-panel";
 import { BAND_LABEL, BAND_SENTENCE, BandBadge, VERDICT_LABEL, VERDICT_SENTENCE, VerdictBadge } from "@/components/ui/badges";
 import { getJobBySlug, MEETS_RULES } from "@/lib/data/jobs";
@@ -45,7 +47,7 @@ export default async function JobPage({ params }: PageProps<"/jobs/[slug]">) {
   const insetClass = passes ? "inset-stamp" : verdict === "SALARY_UNKNOWN" ? "inset" : "inset-flag";
   const employer = employerName(job.employerRawName);
   const matched = a.negativeSignalMatched ?? a.positiveSignalSnippet;
-  const matchedShown = Boolean(matched && paragraphs.some((p) => p.includes(matched)));
+  const matchedShown = Boolean(matched && job.description.replace(/\s+/g, " ").includes(matched.replace(/\s+/g, " ")));
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -112,7 +114,7 @@ export default async function JobPage({ params }: PageProps<"/jobs/[slug]">) {
             </div>
             <div>
               <dt className="text-[0.8125rem] text-ink-70">Source</dt>
-              <dd className="mt-0.5 text-[1rem] capitalize">{job.source.replace("-", " ")}</dd>
+              <dd className="mt-0.5 text-[1rem]">{sourceLabel(job.source)}</dd>
             </div>
           </dl>
 
@@ -132,10 +134,8 @@ export default async function JobPage({ params }: PageProps<"/jobs/[slug]">) {
             <h2 id="advert" className="border-b-2 border-ink pb-2 text-[1.125rem]">
               The advert
             </h2>
-            <div className="prose-body mt-4 max-w-[64ch]">
-              {paragraphs.map((p, i) => (
-                <p key={i}>{highlight(p, a.positiveSignalSnippet, a.negativeSignalMatched)}</p>
-              ))}
+            <div className="mt-4 max-w-[64ch] text-[1.0625rem] leading-relaxed">
+              <AdvertBody text={job.description} highlight={matched} />
             </div>
             <p className="mt-4 text-[0.8125rem] text-ink-45">
               Text as published by the employer.
@@ -254,18 +254,3 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 }
 
 /** Underline the sentence the sponsorship check matched, without changing the text. */
-function highlight(text: string, positive: string | null, negative: string | null) {
-  const needle = negative ?? positive;
-  if (!needle) return text;
-  const i = text.indexOf(needle);
-  if (i < 0) return text;
-  return (
-    <>
-      {text.slice(0, i)}
-      <mark className={`bg-transparent underline decoration-2 underline-offset-4 ${negative ? "decoration-flag" : "decoration-stamp"}`}>
-        {needle}
-      </mark>
-      {text.slice(i + needle.length)}
-    </>
-  );
-}

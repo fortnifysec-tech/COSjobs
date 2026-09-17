@@ -61,7 +61,8 @@ export function parseAppendix(body: string, shortageCodes: Set<string>): Occupat
       const m = /^(\d{4})\s+(.+)$/.exec(r[0] ?? "");
       if (!m) continue;
       const socCode = m[1]!;
-      const title = m[2]!.replace(/\s*\((England|Scotland|Wales|Northern Ireland)\)\s*$/, "").replace(/\s*Note:.*$/, "").trim();
+      // Some cells carry a note after the title ("Care workers and home carers – Jobs with a working location in England ...").
+      const title = m[2]!.replace(/\s*\((England|Scotland|Wales|Northern Ireland)\)\s*$/, "").replace(/\s*Note:.*$/, "").split(/\s+[–—-]\s+/)[0]!.trim();
       const rate = rateIdx >= 0 ? /£([\d,]+)/.exec(r[rateIdx] ?? "")?.[1] : undefined;
       const examples = exIdx >= 0 ? (r[exIdx] ?? "").split("•").map((s) => s.trim()).filter(Boolean) : [];
       if (out.has(socCode)) continue; // national variants repeat the code; keep the first

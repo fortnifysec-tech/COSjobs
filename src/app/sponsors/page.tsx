@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BrowseNav } from "@/components/browse-nav";
 import { Pagination } from "@/components/pagination";
 import { BAND_LABEL, BandBadge } from "@/components/ui/badges";
 import type { Band } from "@/lib/eligibility/scoring";
@@ -30,8 +31,9 @@ export default async function SponsorsPage({ searchParams }: PageProps<"/sponsor
   };
 
   return (
-    <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6 md:py-10">
-      <div className="border-b-2 border-ink pb-4">
+    <div className="mx-auto max-w-[1200px] px-4 py-6 sm:px-6 md:py-8">
+      <BrowseNav current="/sponsors" />
+      <div className="mt-8 border-b-2 border-ink pb-4">
         <h1 className="text-[1.75rem] leading-tight sm:text-[2rem]">Sponsors</h1>
         <p className="prose-lede mt-2 max-w-[60ch] text-[1.0625rem]">
           Every employer we have matched to the register. The band is our own measure of how often their advertised

@@ -84,9 +84,28 @@ export function parseSearchXml(xml: string): { vacancies: Vacancy[]; totalPages:
   return { vacancies, totalPages };
 }
 
+/** Top-level headings on an NHS Jobs advert page, in the order they appear. */
+const NHS_HEADINGS = new Set([
+  "Job summary",
+  "Main duties of the job",
+  "About us",
+  "Details",
+  "Job description",
+  "Job responsibilities",
+  "Person Specification",
+  "Disclosure and Barring Service Check",
+  "Certificate of Sponsorship",
+  "UK Registration",
+  "Additional information",
+  "Employer details",
+]);
+
 /**
  * The advert body: from "Job summary" to just before "Employer details".
- * Exported for tests.
+ * NHS Jobs renders the description and person specification twice, once for
+ * large screens and once for small, so a heading that repeats is skipped with
+ * its section. The "Details" block (pay band, reference, address) is left out;
+ * the salary and location are stored on the job itself. Exported for tests.
  */
 export function parseAdvertHtml(html: string): string | null {
   const main = html.match(/<main[\s\S]*?<\/main>/i)?.[0] ?? html;
@@ -95,10 +114,29 @@ export function parseAdvertHtml(html: string): string | null {
   if (start === -1) return null;
   const endMatch = text.slice(start).search(/^Employer details$/m);
   const body = endMatch === -1 ? text.slice(start) : text.slice(start, start + endMatch);
-  return body
-    .replace(/^Skip to main content.*$/m, "")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
+
+  const out: string[] = [];
+  const seenHeadings = new Set<string>();
+  const seenParagraphs = new Set<string>();
+  let skipping = false;
+  for (const para of body.split(/\n\s*\n/)) {
+    const p = para.trim();
+    if (!p) continue;
+    if (NHS_HEADINGS.has(p)) {
+      skipping = p === "Details" || (seenHeadings.has(p) && p !== "Job responsibilities");
+      seenHeadings.add(p);
+      if (!skipping) out.push(p);
+      continue;
+    }
+    if (skipping) continue;
+    // A long paragraph that repeats is the small-screen copy of the same text.
+    if (p.length > 80) {
+      if (seenParagraphs.has(p)) continue;
+      seenParagraphs.add(p);
+    }
+    out.push(p);
+  }
+  return out.join("\n\n").replace(/^Skip to main content.*$/m, "").trim();
 }
 
 function toRaw(v: Vacancy, description: string): RawJob | null {

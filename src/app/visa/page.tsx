@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BrowseNav } from "@/components/browse-nav";
 import { Ledger, LedgerRow } from "@/components/ledger";
 import { routeIndex } from "@/lib/data/browse";
 import { num } from "@/lib/format";
@@ -20,8 +21,9 @@ export default async function VisaRoutesPage() {
   const other = routes.filter((r) => !routeInfo(r.route));
 
   return (
-    <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6 md:py-10">
-      <div className="border-b-2 border-ink pb-4">
+    <div className="mx-auto max-w-[1200px] px-4 py-6 sm:px-6 md:py-8">
+      <BrowseNav current="/visa" />
+      <div className="mt-8 border-b-2 border-ink pb-4">
         <h1 className="text-[1.75rem] leading-tight sm:text-[2rem]">Sponsored visa routes</h1>
         <p className="prose-lede mt-3 max-w-[62ch]">
           A sponsor licence names the routes an employer may sponsor on. Most licences cover the Skilled Worker route,
