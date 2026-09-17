@@ -5,8 +5,19 @@ export const SITE_DOMAIN = "cosjobs.co.uk";
 export const NAV = [
   { href: "/jobs", label: "Jobs" },
   { href: "/sponsors", label: "Sponsors" },
+  { href: "/occupations", label: "Occupations" },
+  { href: "/guides", label: "Guides" },
   { href: "/how-it-works", label: "How we check" },
   { href: "/pricing", label: "Pricing" },
+] as const;
+
+export const BROWSE = [
+  { href: "/occupations", label: "Occupation codes" },
+  { href: "/cities", label: "Towns and cities" },
+  { href: "/visa", label: "Visa routes" },
+  { href: "/guides", label: "Guides" },
+  { href: "/faq", label: "Questions and answers" },
+  { href: "/about", label: "About" },
 ] as const;
 
 /**

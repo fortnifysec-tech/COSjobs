@@ -1,0 +1,1 @@
+ALTER TABLE "occupations" ADD COLUMN "example_titles" text[] DEFAULT '{}' NOT NULL;

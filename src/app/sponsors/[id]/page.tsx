@@ -106,8 +106,12 @@ export default async function SponsorPage({ params }: PageProps<"/sponsors/[id]"
                 )}
               </Row>
               <Row label="First seen">
-                {longDate(sponsor.firstSeenAt)}
-                <span className="block text-[0.875rem] text-ink-45">{daysToYears(activity?.licenceTenureDays ?? 0)} on the register</span>
+                {sponsor.licenceSinceKnown ? longDate(sponsor.firstSeenAt) : `Before ${longDate(sponsor.firstSeenAt)}`}
+                <span className="block text-[0.875rem] text-ink-45">
+                  {sponsor.licenceSinceKnown
+                    ? `${daysToYears(activity?.licenceTenureDays ?? Math.floor((now.getTime() - sponsor.firstSeenAt.getTime()) / 86_400_000))} on the register`
+                    : "Listed when we took our first copy of the register. The licence date is not published."}
+                </span>
               </Row>
               <Row label="Last seen">{shortDateTime(sponsor.lastSeenAt)}</Row>
               {sponsor.companiesHouseNumber ? (

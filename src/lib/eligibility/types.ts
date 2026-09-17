@@ -16,6 +16,12 @@ export type OccupationRule = {
   rqfLevel: number;
   goingRateAnnual: number;
   isTsl: boolean;
+  /**
+   * Going rate is a national pay scale (Appendix Skilled Occupations, Table 3:
+   * NHS Agenda for Change, doctors, teachers). There is no single figure to
+   * test the advert against, so the salary rule is left unknown.
+   */
+  payScale?: boolean;
 };
 
 export type SponsorRecord = {

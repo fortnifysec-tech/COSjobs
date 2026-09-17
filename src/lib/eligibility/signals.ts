@@ -11,6 +11,8 @@ const NEGATIVE_PATTERNS: RegExp[] = [
   /\bright\s+to\s+work\s+in\s+the\s+uk\s+(?:is\s+)?(?:required|essential|mandatory)\b/i,
   /\bno\s+(?:visa\s+)?sponsorship\b/i,
   /\bnot\s+(?:in\s+a\s+position|able)\s+to\s+(?:offer|provide)\s+sponsorship\b/i,
+  /\b(?:unable|not\s+able|not\s+in\s+a\s+position)\s+to\s+sponsor\b/i,
+  /\bsponsorship\s+(?:is\s+|will\s+)?not\s+(?:be\s+)?(?:available|offered|provided|possible)\b/i,
 ];
 
 const POSITIVE_PATTERNS: RegExp[] = [
@@ -19,6 +21,11 @@ const POSITIVE_PATTERNS: RegExp[] = [
   /[^.]*\b(?:skilled\s+worker|tier\s*2)\s+(?:visa\s+)?sponsorship\s+(?:is\s+)?(?:available|offered)\b[^.]*\./i,
   /[^.]*\bsponsorship\s+available\b[^.]*\./i,
   /[^.]*\blicensed\s+sponsor\b[^.]*\bsponsor(?:ship)?\b[^.]*\./i,
+  // NHS Jobs "Certificate of Sponsorship" section, present when the employer ticks it.
+  /[^.]*\brequires?\s+(?:current\s+)?skilled\s+worker\s+(?:visa\s+)?sponsorship\b[^.]*\bwelcome\b[^.]*\./i,
+  // Employer boards: "✅ We can sponsor visas". Often no full stop, so only the phrase is quoted.
+  /\bwe\s+(?:can|will|do|are\s+(?:able|happy)\s+to)\s+sponsor\s+(?:your\s+|a\s+)?(?:skilled\s+worker\s+)?visas?\b/i,
+  /\b(?:visa|skilled\s+worker)\s+sponsorship\s+(?:is\s+)?(?:available|offered|provided|supported)\b/i,
 ];
 
 export type SignalResult = {

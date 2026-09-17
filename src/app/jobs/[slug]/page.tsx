@@ -47,8 +47,31 @@ export default async function JobPage({ params }: PageProps<"/jobs/[slug]">) {
   const matched = a.negativeSignalMatched ?? a.positiveSignalSnippet;
   const matchedShown = Boolean(matched && paragraphs.some((p) => p.includes(matched)));
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: job.title,
+    description: job.description.slice(0, 5000),
+    datePosted: job.postedAt.toISOString(),
+    employmentType: "FULL_TIME",
+    hiringOrganization: { "@type": "Organization", name: employer },
+    jobLocation: { "@type": "Place", address: { "@type": "PostalAddress", addressLocality: job.location, addressCountry: "GB" } },
+    ...(job.isRemote ? { jobLocationType: "TELECOMMUTE" } : {}),
+    ...(job.salaryMin
+      ? {
+          baseSalary: {
+            "@type": "MonetaryAmount",
+            currency: "GBP",
+            value: { "@type": "QuantitativeValue", minValue: job.salaryMin, ...(job.salaryMax ? { maxValue: job.salaryMax } : {}), unitText: (job.salaryPeriod ?? "year").toUpperCase() },
+          },
+        }
+      : {}),
+    identifier: { "@type": "PropertyValue", name: job.source, value: job.sourceJobId },
+  };
+
   return (
     <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6 md:py-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <p className="text-[0.875rem] text-ink-70">
         <Link href="/jobs" className="text-ink-70 hover:text-ink">
           Jobs
@@ -167,8 +190,17 @@ export default async function JobPage({ params }: PageProps<"/jobs/[slug]">) {
                 </Row>
                 <Row label="Routes">{sponsor.routes.join(", ") || "None"}</Row>
                 <Row label="On register">
-                  {daysToYears(activity?.licenceTenureDays ?? Math.floor((now.getTime() - sponsor.firstSeenAt.getTime()) / 86_400_000))}
-                  <span className="text-ink-45"> · since {longDate(sponsor.firstSeenAt)}</span>
+                  {sponsor.licenceSinceKnown ? (
+                    <>
+                      {daysToYears(activity?.licenceTenureDays ?? Math.floor((now.getTime() - sponsor.firstSeenAt.getTime()) / 86_400_000))}
+                      <span className="text-ink-45"> · since {longDate(sponsor.firstSeenAt)}</span>
+                    </>
+                  ) : (
+                    <>
+                      Since before {longDate(sponsor.firstSeenAt)}
+                      <span className="block text-[0.875rem] text-ink-45">Listed when we took our first copy of the register. Licence date not published.</span>
+                    </>
+                  )}
                 </Row>
                 {sponsor.companiesHouseNumber ? (
                   <Row label="Companies House">

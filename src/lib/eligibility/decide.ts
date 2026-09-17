@@ -150,8 +150,22 @@ export function decide(input: RulesInput): RulesOutcome {
   });
 
   // 4. Salary
-  const required = Math.max(thresholds.general, occupation.goingRateAnnual);
   const assessed = annualise(salary);
+  if (occupation.payScale) {
+    checks.push({
+      key: "salary",
+      state: "UNKNOWN",
+      detail: `${occupation.socCode} is paid on a national pay scale. Pay-scale rates are not checked as a single figure.`,
+    });
+    return finish("SALARY_UNKNOWN", checks, {
+      salaryCheck: "UNKNOWN",
+      salaryAssessedAnnual: assessed,
+      salaryRequiredAnnual: null,
+      reason: "This occupation's going rate is a national pay scale (Table 3 of Appendix Skilled Occupations). We do not check pay-scale salaries yet.",
+      rulesVersion: thresholds.version,
+    });
+  }
+  const required = Math.max(thresholds.general, occupation.goingRateAnnual);
   if (assessed === null) {
     checks.push({ key: "salary", state: "UNKNOWN", detail: "No salary figure in the advert." });
     return finish("SALARY_UNKNOWN", checks, {

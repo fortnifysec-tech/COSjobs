@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DISCLAIMER, NAV, SITE_DOMAIN, SITE_NAME } from "@/lib/site";
+import { BROWSE, DISCLAIMER, NAV, SITE_DOMAIN, SITE_NAME } from "@/lib/site";
 
 const LEGAL = [
   { href: "/terms", label: "Terms" },
@@ -18,7 +18,7 @@ export function SiteFooter() {
   return (
     <footer className="mt-20 border-t-2 border-ink bg-paper">
       <div className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6">
-        <div className="grid gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,2fr)_minmax(0,2fr)_minmax(0,3fr)]">
+        <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-[minmax(0,5fr)_minmax(0,2fr)_minmax(0,2fr)_minmax(0,2fr)_minmax(0,3fr)]">
           <div>
             <p className="text-[1.125rem] tracking-heading text-ink">
               <span className="font-bold">COS</span>jobs
@@ -44,6 +44,18 @@ export function SiteFooter() {
                   Account
                 </Link>
               </li>
+            </ul>
+          </nav>
+          <nav aria-label="Browse">
+            <p className="text-[0.875rem] font-bold text-ink">Browse</p>
+            <ul className="mt-2 space-y-1.5 text-[0.9375rem]">
+              {BROWSE.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="text-ink-70 no-underline hover:text-ink hover:underline">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </nav>
           <nav aria-label="Legal">

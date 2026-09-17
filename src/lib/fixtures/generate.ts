@@ -15,22 +15,8 @@ function mulberry32(seed: number) {
   };
 }
 
-export function slugify(s: string) {
-  return s
-    .toLowerCase()
-    .replace(/&/g, " and ")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-export function normaliseName(s: string) {
-  return s
-    .toUpperCase()
-    .replace(/[.,'’]/g, "")
-    .replace(/\b(LIMITED|LTD|PLC|LLP|GROUP|UK|THE)\b/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
+export { slugify, normaliseName } from "@/lib/names";
+import { slugify, normaliseName } from "@/lib/names";
 
 /* ---------- shapes ---------- */
 

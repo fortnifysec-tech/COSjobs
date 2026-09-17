@@ -3,10 +3,14 @@ import { EvidencePanel, type EvidenceRow } from "@/components/evidence-panel";
 import { JobRow } from "@/components/job-row";
 import { Stamp } from "@/components/ui/badges";
 import { hasDatabase } from "@/db/client";
+import { cityIndex, occupationIndex, routeIndex, type CitySummary, type OccupationSummary, type RouteSummary } from "@/lib/data/browse";
 import { getJobBySlug, listJobs, type JobDetail } from "@/lib/data/jobs";
 import { recentRegisterChanges, siteStats, type RegisterChange } from "@/lib/data/sponsors";
 import { evidenceRows } from "@/lib/evidence";
 import { describeChange, employerName, isoDate, longDate, money, num, shortDate, titleCase } from "@/lib/format";
+
+/** Counts come from the database; re-render at most every 30 minutes. */
+export const revalidate = 1800;
 
 const CHECKS = [
   {
@@ -148,6 +152,31 @@ export default async function HomePage() {
         </section>
       ) : null}
 
+      {data ? (
+        <section className="border-b hairline">
+          <div className="mx-auto max-w-[1200px] px-4 py-12 sm:px-6">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
+              <div>
+                <h2 className="text-[1.625rem] leading-tight">Browse the record</h2>
+                <p className="mt-1 text-[0.9375rem] text-ink-70">By the code the role is sponsored under, by town, or by the route on the licence.</p>
+              </div>
+              <Link href="/guides" className="text-[0.9375rem] text-ink">
+                Read the guides
+              </Link>
+            </div>
+            <div className="mt-6 grid gap-10 md:grid-cols-3 md:gap-8">
+              <BrowseList
+                title="Occupation codes"
+                href="/occupations"
+                items={data.occupations.map((o) => ({ href: `/occupations/${o.socCode}`, label: o.title, lead: o.socCode, n: o.meeting, of: o.live }))}
+              />
+              <BrowseList title="Towns and cities" href="/cities" items={data.cities.map((c) => ({ href: `/cities/${c.slug}`, label: c.city, n: c.meeting, of: c.live }))} />
+              <BrowseList title="Routes on the register" href="/visa" items={data.routes.map((r) => ({ href: `/visa/${r.slug}`, label: r.route, n: r.sponsors, unit: "licences" }))} />
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       <section className="border-b hairline">
         <div className="mx-auto grid max-w-[1200px] gap-10 px-4 py-12 sm:px-6 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:gap-12">
           <div>
@@ -216,6 +245,34 @@ function Figure({ n, label }: { n: number; label: string }) {
   );
 }
 
+function BrowseList({ title, href, items }: { title: string; href: string; items: { href: string; label: string; lead?: string; n: number; of?: number; unit?: string }[] }) {
+  return (
+    <div className="min-w-0">
+      <p className="border-b-2 border-ink pb-2 text-[0.875rem] font-bold">
+        <Link href={href} className="text-ink no-underline hover:underline">
+          {title}
+        </Link>
+      </p>
+      <ul>
+        {items.map((i) => (
+          <li key={i.href} className="border-b hairline-soft">
+            <Link href={i.href} className="flex items-baseline justify-between gap-4 py-2 text-[0.9375rem] no-underline hover:bg-card">
+              <span className="min-w-0 truncate text-ink">
+                {i.lead ? <span className="mono mr-2 text-[0.8125rem] text-ink-45">{i.lead}</span> : null}
+                {i.label}
+              </span>
+              <span className="mono shrink-0 text-[0.8125rem] text-ink-70">
+                {num(i.n)}
+                {i.of !== undefined ? <span className="text-ink-45"> of {num(i.of)}</span> : i.unit ? <span className="text-ink-45"> {i.unit}</span> : null}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function ChangeRow({ change }: { change: RegisterChange }) {
   return (
     <li className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-x-4 border-b hairline-soft py-2.5 text-[0.9375rem]">
@@ -232,15 +289,21 @@ function ChangeRow({ change }: { change: RegisterChange }) {
 
 async function loadHome() {
   const now = new Date();
-  const [stats, recentRes, changes] = await Promise.all([
+  const [stats, recentRes, changes, occ, cities, routes] = await Promise.all([
     siteStats(),
     listJobs({ rulesOnly: false, page: 1 }),
     recentRegisterChanges(6),
+    occupationIndex(),
+    cityIndex(),
+    routeIndex(),
   ]);
+  const occupations: OccupationSummary[] = occ.items.filter((o) => o.live > 0).slice(0, 7);
+  const topCities: CitySummary[] = cities.slice(0, 7);
+  const topRoutes: RouteSummary[] = routes.slice(0, 7);
   const recent = [...recentRes.items].sort((a, b) => b.postedAt.getTime() - a.postedAt.getTime()).slice(0, 8);
   const confirmed = recentRes.items.find((j) => j.verdict === "CONFIRMED" && j.salaryMax !== null);
   const example: JobDetail | null = confirmed ? await getJobBySlug(confirmed.slug) : null;
-  return { stats, recent, changes, example, now };
+  return { stats, recent, changes, example, now, occupations, cities: topCities, routes: topRoutes };
 }
 
 const STATIC_EXAMPLE: EvidenceRow[] = [

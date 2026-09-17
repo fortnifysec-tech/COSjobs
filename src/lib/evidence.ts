@@ -45,7 +45,7 @@ export function evidenceRows(detail: JobDetail): EvidenceRow[] {
     rows.push({
       label: "Sponsor licence",
       text: titleCase(sponsor.rawName),
-      note: `A-rated. Skilled Worker route. On the register for ${daysToYears(activity?.licenceTenureDays ?? Math.floor((Date.now() - sponsor.firstSeenAt.getTime()) / 86_400_000))}.`,
+      note: `A-rated. Skilled Worker route. ${tenureSentence(sponsor, activity?.licenceTenureDays ?? null)}`,
       state: "pass",
     });
   }
@@ -67,8 +67,10 @@ export function evidenceRows(detail: JobDetail): EvidenceRow[] {
 
   // 4. Salary
   const required = a.salaryRequiredAnnual ?? (occupation && generalThreshold ? Math.max(generalThreshold, occupation.goingRateAnnual) : null);
-  if (occupation) {
-    rows.push({ label: "Going rate", value: money(occupation.goingRateAnnual), note: "Appendix Skilled Occupations, ASHE 2024, 50th percentile.", state: "info" });
+  if (occupation && occupation.payScale) {
+    rows.push({ label: "Going rate", text: "National pay scale", note: "Appendix Skilled Occupations, Table 3. The rate is the pay band for the post, not a single figure.", state: "info" });
+  } else if (occupation) {
+    rows.push({ label: "Going rate", value: money(occupation.goingRateAnnual), note: "Appendix Skilled Occupations, Table 1, ASHE 2024 median.", state: "info" });
   }
   if (generalThreshold) {
     rows.push({ label: "General threshold", value: money(generalThreshold), note: required ? `The salary must meet ${money(required)}, the higher of the two.` : undefined, state: "info" });
@@ -76,6 +78,8 @@ export function evidenceRows(detail: JobDetail): EvidenceRow[] {
   const advertised = salaryAsAdvertised(job);
   if (stopped) {
     rows.push({ label: "Advertised salary", value: advertised ?? undefined, text: advertised ? undefined : "Not stated", note: notChecked, state: "skipped" });
+  } else if (a.salaryCheck === "UNKNOWN" && occupation?.payScale) {
+    rows.push({ label: "Advertised salary", text: advertised ?? "Not stated", note: "Paid on a national pay scale. We do not test pay-scale salaries against a single figure yet.", state: "unknown" });
   } else if (a.salaryCheck === "UNKNOWN") {
     rows.push({ label: "Advertised salary", text: advertised ?? "Not stated", note: job.salaryMax && !job.salaryMin ? "An upper figure alone cannot be tested. The rule applies to the minimum." : "No figure in the advert, so the salary rule cannot be tested.", state: "unknown" });
   } else {
@@ -100,6 +104,15 @@ export function evidenceRows(detail: JobDetail): EvidenceRow[] {
   }
 
   return rows;
+}
+
+/** "On the register for 4 years." or, for sponsors already listed at our first snapshot, "On the register since before 17 Sept 2026." */
+export function tenureSentence(sponsor: { firstSeenAt: Date; licenceSinceKnown: boolean }, tenureDays: number | null): string {
+  if (!sponsor.licenceSinceKnown) {
+    return `On the register since before ${sponsor.firstSeenAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}, when we took our first copy.`;
+  }
+  const days = tenureDays ?? Math.floor((Date.now() - sponsor.firstSeenAt.getTime()) / 86_400_000);
+  return `On the register for ${daysToYears(days)}.`;
 }
 
 function salaryAsAdvertised(job: JobDetail["job"]): string | null {

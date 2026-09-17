@@ -34,3 +34,19 @@ describe("extractSignals", () => {
     expect(r.positiveSnippet).not.toBeNull();
   });
 });
+
+describe("extractSignals: real-world wording", () => {
+  it("reads the NHS Certificate of Sponsorship section as positive", () => {
+    const t = "Certificate of Sponsorship\n\nApplications from job seekers who require current Skilled worker sponsorship to work in the UK are welcome and will be considered alongside all other applications. For further information visit the UK Visas and Immigration website.";
+    const s = extractSignals(t);
+    expect(s.negativeMatch).toBeNull();
+    expect(s.positiveSnippet).toMatch(/are welcome/);
+  });
+  it("reads 'we can sponsor visas' as positive", () => {
+    expect(extractSignals("✈️ We can help you relocate ✅ We can sponsor visas 📍 London").positiveSnippet).toBe("We can sponsor visas");
+  });
+  it("reads 'unable to sponsor' and 'sponsorship is not available' as refusals", () => {
+    expect(extractSignals("We are unable to sponsor candidates for this role.").negativeMatch).toMatch(/unable to sponsor/);
+    expect(extractSignals("Visa sponsorship is not available.").negativeMatch).toMatch(/not available/);
+  });
+});

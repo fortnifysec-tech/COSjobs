@@ -211,7 +211,7 @@ export type JobDetail = {
     rulesVersion: string;
     assessedAt: Date;
   };
-  occupation: { socCode: string; title: string; rqfLevel: number; goingRateAnnual: number; isTsl: boolean } | null;
+  occupation: { socCode: string; title: string; rqfLevel: number; goingRateAnnual: number; isTsl: boolean; payScale: boolean } | null;
   generalThreshold: number | null;
   sponsor: (typeof sponsors.$inferSelect) | null;
   activity: { band: Band; score: number; jobsPosted90d: number; eligibleRoleCount: number; licenceTenureDays: number; scoringVersion: string; computedAt: Date } | null;
@@ -248,7 +248,7 @@ export async function getJobBySlug(slug: string): Promise<JobDetail | null> {
   const [occupation, threshold, sponsor] = await Promise.all([
     row.assessment.socCode
       ? d
-          .select({ socCode: occupations.socCode, title: occupations.title, rqfLevel: occupations.rqfLevel, goingRateAnnual: occupations.goingRateAnnual, isTsl: occupations.isTsl })
+          .select({ socCode: occupations.socCode, title: occupations.title, rqfLevel: occupations.rqfLevel, goingRateAnnual: occupations.goingRateAnnual, isTsl: occupations.isTsl, payScale: occupations.payScale })
           .from(occupations)
           .where(and(eq(occupations.socCode, row.assessment.socCode), sql`${occupations.effectiveFrom} <= ${rulesDate}`, or(isNull(occupations.effectiveTo), sql`${occupations.effectiveTo} >= ${rulesDate}`)))
           .orderBy(desc(occupations.effectiveFrom))

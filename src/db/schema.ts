@@ -1,6 +1,7 @@
 import {
   boolean,
   date,
+  doublePrecision,
   index,
   integer,
   numeric,
@@ -52,6 +53,10 @@ export const occupations = pgTable(
     rqfLevel: integer("rqf_level").notNull(),
     goingRateAnnual: integer("going_rate_annual").notNull(),
     isTsl: boolean("is_tsl").notNull().default(false),
+    /** Going rate is a national pay scale (Appendix Skilled Occupations, Table 3). Not checked as a single figure. */
+    payScale: boolean("pay_scale").notNull().default(false),
+    /** "Examples of related job titles" from the appendix. */
+    exampleTitles: text("example_titles").array().notNull().default([]),
     effectiveFrom: date("effective_from").notNull(),
     effectiveTo: date("effective_to"),
   },
@@ -84,6 +89,8 @@ export const sponsors = pgTable(
     firstSeenAt: timestamp("first_seen_at", { withTimezone: true }).notNull(),
     lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).notNull(),
     isActive: boolean("is_active").notNull().default(true),
+    /** False for sponsors already on the register when we took our first snapshot: licence date unknown. */
+    licenceSinceKnown: boolean("licence_since_known").notNull().default(true),
     companiesHouseNumber: text("companies_house_number"),
     websiteDomain: text("website_domain"),
   },
@@ -153,8 +160,9 @@ export const jobs = pgTable(
     employerRawName: text("employer_raw_name").notNull(),
     title: text("title").notNull(),
     description: text("description").notNull(),
-    salaryMin: integer("salary_min"),
-    salaryMax: integer("salary_max"),
+    /** As advertised, in the advertised period. Hourly rates keep their pence. */
+    salaryMin: doublePrecision("salary_min"),
+    salaryMax: doublePrecision("salary_max"),
     salaryPeriod: salaryPeriodEnum("salary_period"),
     location: text("location").notNull(),
     isRemote: boolean("is_remote").notNull().default(false),
